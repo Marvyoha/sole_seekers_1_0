@@ -44,4 +44,5 @@ flutter_launcher_icons:
 flutter:
   assets:
     - assets/
+    - assets/brand_icons/
   uses-material-design: true

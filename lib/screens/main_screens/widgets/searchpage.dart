@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:sole_seekers_1_0/constant/global_variables.dart';
 
 import '../../../constant/font_styles.dart';
 import '../../../constant/widgets/custom_textfield.dart';
@@ -15,9 +18,15 @@ class _SearchPageState extends State<SearchPage> {
   List catalogs = []; // Initializing a list to store catalog data
   List resultList = []; // Initializing a list to store search results
   final TextEditingController searchController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: []); // Hide the status bar
+    Future.delayed(Duration.zero, () {
+      FocusScope.of(context).requestFocus(_focusNode);
+    }); // Request focus and open the keyboard when the modal dialog is shown
     searchController.addListener(
         onSearchChanged); // Adding a listener to the search input field
     super.initState();
@@ -72,6 +81,10 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   void dispose() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: SystemUiOverlay.values); // Restore the status bar
+    _focusNode.dispose();
+
     searchController.removeListener(
         onSearchChanged); // Removing the listener from the search input field
     searchController.dispose(); // Disposing the search input controller
@@ -87,29 +100,42 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: CustomTextField(
-            hintText: 'Search catalog',
-            controller: searchController,
+        body: SafeArea(
+      child: Column(
+        children: [
+          GlobalVariables.spaceMedium(),
+          Padding(
+            padding: GlobalVariables.normPadding,
+            child: CustomTextField(
+              hintText: 'Search catalog',
+              focusNode: _focusNode,
+              controller: searchController,
+            ),
           ),
-        ),
-        body: ListView.builder(
-          itemCount: resultList.length,
-          itemBuilder: (BuildContext context, int index) {
-            var items = resultList[index];
-            return ListTile(
-              leading: CircleAvatar(
-                  radius: 24, backgroundImage: NetworkImage(items['image'])),
-              title: Text(
-                items['name'],
-                style: WriteStyles.cardSubtitle(context).copyWith(),
-              ),
-              subtitle: Text(
-                '\$${items['price'].toString()}',
-                style: WriteStyles.cardSubtitle(context).copyWith(),
-              ),
-            );
-          },
-        ));
+          GlobalVariables.spaceSmall(),
+          Expanded(
+            child: ListView.builder(
+              itemCount: resultList.length,
+              itemBuilder: (BuildContext context, int index) {
+                var items = resultList[index];
+                return ListTile(
+                  leading: CircleAvatar(
+                      radius: 24,
+                      backgroundImage: NetworkImage(items['image'])),
+                  title: Text(
+                    items['name'],
+                    style: WriteStyles.cardSubtitle(context).copyWith(),
+                  ),
+                  subtitle: Text(
+                    '\$${items['price'].toString()}',
+                    style: WriteStyles.cardSubtitle(context).copyWith(),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    ));
   }
 }

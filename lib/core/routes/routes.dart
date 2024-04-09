@@ -7,13 +7,10 @@ import '../../screens/auth_screens/signup.dart';
 import '../../screens/main_screens/homepage.dart';
 import '../../screens/main_screens/widgets/searchpage.dart';
 import '../../screens/misc_screens/on_boarding.dart';
-import '../../screens/misc_screens/splashscreen.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
-      case 'splash':
-        return MaterialPageRoute(builder: (_) => const SplashScreen());
       case 'login':
         return MaterialPageRoute(builder: (_) => const Login());
       case 'signup':

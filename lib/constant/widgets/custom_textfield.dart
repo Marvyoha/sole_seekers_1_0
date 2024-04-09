@@ -7,18 +7,21 @@ class CustomTextField extends StatelessWidget {
   final bool obscureText;
   final String? hintText;
   final TextEditingController? controller;
+  final FocusNode? focusNode;
 
   const CustomTextField(
       {super.key,
       this.obscureText = false,
       required this.hintText,
       required this.controller,
-      this.onChanged});
+      this.onChanged,
+      this.focusNode});
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       onChanged: onChanged,
+      focusNode: focusNode,
       style: TextStyle(color: Theme.of(context).colorScheme.primary),
       controller: controller,
       obscureText: obscureText,

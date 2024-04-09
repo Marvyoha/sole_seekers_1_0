@@ -7,6 +7,10 @@ class GlobalVariables {
   static String onboardimage1 = 'assets/On boarding pic.png';
   static String onboardimage2 = 'assets/On boarding pic2.png';
   static String onboardimage3 = 'assets/On boarding pic3.png';
+  static String brandLogo1 = 'assets/brand_icons/Nike logo.png';
+  static String brandLogo2 = 'assets/brand_icons/Adidas logo.png';
+  static String brandLogo3 = 'assets/brand_icons/Reebok logo.png';
+  static String brandLogo4 = 'assets/brand_icons/Naked wolfe logo.png';
 
   static double sizeHeight(BuildContext context) {
     return MediaQuery.of(context).size.height;
@@ -18,6 +22,7 @@ class GlobalVariables {
 
   static EdgeInsetsGeometry normPadding =
       const EdgeInsets.symmetric(horizontal: 20);
+  static EdgeInsetsGeometry cardPadding = const EdgeInsets.all(10);
   static EdgeInsetsGeometry onBoardPadding =
       const EdgeInsets.fromLTRB(20, 0, 20, 0);
 

@@ -8,7 +8,7 @@ import '../../constant/global_variables.dart';
 import '../../constant/widgets/custom_button.dart';
 import '../../constant/widgets/custom_textfield.dart';
 import '../../core/providers/services_provider.dart';
-import 'widgets/privacy_policy_dialog.dart';
+import '../../constant/widgets/privacy_policy_dialog.dart';
 
 class Login extends StatelessWidget {
   const Login({super.key});
@@ -117,7 +117,7 @@ class Login extends StatelessWidget {
                           CarbonIcons.logo_google,
                           size: 30.sp,
                         ))),
-                GlobalVariables.spaceMedium(),
+                GlobalVariables.spaceSmall(),
                 Center(
                   child: GestureDetector(
                     onTap: () {
@@ -135,6 +135,7 @@ class Login extends StatelessWidget {
                     ])),
                   ),
                 ),
+                GlobalVariables.spaceSmall(),
               ],
             ),
           ),

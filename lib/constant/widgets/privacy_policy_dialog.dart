@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../constant/font_styles.dart';
+import '../font_styles.dart';
 
 privacyPolicy(BuildContext context) {
   return showDialog(

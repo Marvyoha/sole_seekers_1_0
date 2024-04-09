@@ -36,7 +36,8 @@ class MainApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         onGenerateRoute: RouteGenerator.generateRoute,
         initialRoute: 'authChecker',
-        theme: Provider.of<ThemeProvider>(context).themeMode,
+        theme: lightMode,
+        // theme: Provider.of<ThemeProvider>(context).themeMode,
       ),
     );
   }
