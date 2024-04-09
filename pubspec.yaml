@@ -1,0 +1,47 @@
+name: sole_seekers_1_0
+description: "A Final Year Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.3.3 <4.0.0'
+
+dependencies:
+  carbon_icons: 
+  cloud_firestore:
+  firebase_auth:
+  firebase_core:
+  firebase_ui_firestore:
+  flutter_native_splash: ^2.4.0
+  # cached_network_image:
+  flutter:
+    sdk: flutter
+  flutter_screenutil: 
+  # fluttertoast:
+  google_fonts: 
+  provider:
+  smooth_page_indicator:
+
+flutter_native_splash:
+  image: assets/SoleSeekers splash.png
+  color: "#F7FAF7"
+  android: true
+  ios: true
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  flutter_launcher_icons: "^0.13.1"
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  adaptive_icon_background: "#F7FAF7"
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/SoleSeekers app icon.png"
+
+flutter:
+  assets:
+    - assets/
+  uses-material-design: true
