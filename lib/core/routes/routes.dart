@@ -5,6 +5,7 @@ import '../../screens/auth_screens/forgot_password.dart';
 import '../../screens/auth_screens/login.dart';
 import '../../screens/auth_screens/signup.dart';
 import '../../screens/main_screens/homepage.dart';
+import '../../screens/main_screens/widgets/main_navigation.dart';
 import '../../screens/main_screens/widgets/searchpage.dart';
 import '../../screens/misc_screens/on_boarding.dart';
 
@@ -25,6 +26,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const ForgotPassword());
       case 'searchPage':
         return MaterialPageRoute(builder: (_) => const SearchPage());
+      case 'mainNav':
+        return MaterialPageRoute(builder: (_) => const MainNav());
       default:
         return _errorRoute();
     }

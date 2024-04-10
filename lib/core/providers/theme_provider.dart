@@ -12,12 +12,13 @@ class ThemeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleTheme() {
+  void toggleTheme(BuildContext context) {
     if (_themeMode == lightMode) {
       themeMode = darkMode;
     } else {
       themeMode = lightMode;
     }
+    Navigator.pushNamed(context, 'authChecker');
   }
 }
 

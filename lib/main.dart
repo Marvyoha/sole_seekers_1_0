@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:sole_seekers_1_0/core/providers/query_provider.dart';
 
 import 'constant/color_palette.dart';
 import 'core/providers/services_provider.dart';
@@ -18,7 +19,8 @@ Future<void> main() async {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => ServicesProvider()),
-      ChangeNotifierProvider(create: (context) => ThemeProvider())
+      ChangeNotifierProvider(create: (context) => ThemeProvider()),
+      ChangeNotifierProvider(create: (context) => QueryProvider())
     ],
     child: const MainApp(),
   ));
@@ -36,8 +38,8 @@ class MainApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         onGenerateRoute: RouteGenerator.generateRoute,
         initialRoute: 'authChecker',
-        theme: lightMode,
-        // theme: Provider.of<ThemeProvider>(context).themeMode,
+        // theme: lightMode,
+        theme: Provider.of<ThemeProvider>(context).themeMode,
       ),
     );
   }

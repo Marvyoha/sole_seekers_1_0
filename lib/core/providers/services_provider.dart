@@ -19,10 +19,11 @@ class ServicesProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String? docId;
-  List<Map<String, dynamic>>? searchResults;
+
   List? _catalogs;
   Map<String, dynamic>? _currentUserDoc;
   bool _loader = false;
+  Stream<QuerySnapshot<Map<String, dynamic>>>? _specificBrand;
 
   //Getters
   FirebaseFirestore? get firestore => _firestore;
@@ -32,10 +33,17 @@ class ServicesProvider extends ChangeNotifier {
   Map<String, dynamic>? get currentUserDoc => _currentUserDoc;
   bool get loader => _loader;
   CollectionReference<Item> get shoesPGDb => _shoesPGDb;
+  Stream<QuerySnapshot<Map<String, dynamic>>>? get specificBrand =>
+      _specificBrand;
 
   //Setters
   set loader(bool newLoader) {
     _loader = newLoader;
+  }
+
+  set specificBrand(
+      Stream<QuerySnapshot<Map<String, dynamic>>>? newSpecificBrand) {
+    _specificBrand = newSpecificBrand;
   }
 
   set currentUserDoc(Map<String, dynamic>? newUserDoc) {
@@ -62,7 +70,7 @@ class ServicesProvider extends ChangeNotifier {
       });
       notifyListeners();
     } on FirebaseAuthException catch (e) {
-      debugPrint('Authentication Error: [${e.code}]' + ' ${e.message}');
+      debugPrint('Authentication Error: [${e.code}]' ' ${e.message}');
       // Fluttertoast.showToast(
       //     msg: '${e.message}',
       //     gravity: ToastGravity.TOP,
@@ -103,7 +111,7 @@ class ServicesProvider extends ChangeNotifier {
         );
         notifyListeners();
       } on FirebaseAuthException catch (e) {
-        debugPrint('Authentication Error: [${e.code}]' + ' ${e.message}');
+        debugPrint('Authentication Error: [${e.code}]' ' ${e.message}');
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -244,7 +252,7 @@ class ServicesProvider extends ChangeNotifier {
         'purchased': [],
       });
     } on FirebaseException catch (e) {
-      debugPrint('Database Error: [${e.code}]' + ' ${e.message}');
+      debugPrint('Database Error: [${e.code}]' ' ${e.message}');
     }
   }
 
@@ -261,7 +269,7 @@ class ServicesProvider extends ChangeNotifier {
         }
       }
     } on FirebaseException catch (e) {
-      debugPrint('Database Error: [${e.code}]' + ' ${e.message}');
+      debugPrint('Database Error: [${e.code}]' ' ${e.message}');
     }
     return currentUserDoc;
   }
@@ -277,7 +285,32 @@ class ServicesProvider extends ChangeNotifier {
         });
       }
     } on FirebaseException catch (e) {
-      debugPrint('Database Error: [${e.code}]' + ' ${e.message}');
+      debugPrint('Database Error: [${e.code}]' ' ${e.message}');
     }
+  }
+
+  Future<Stream<QuerySnapshot<Map<String, dynamic>>>?> getSpecificBrand(
+      String brand) async {
+    if (brand == 'all_items') {
+      try {
+        var collection = await firestore?.collection("catalogs").snapshots();
+        _specificBrand = collection;
+      } on FirebaseException catch (e) {
+        debugPrint('Database Error: [${e.code}]' ' ${e.message}');
+      }
+    } else {
+      try {
+        var collection = await firestore
+            ?.collection("catalogs")
+            .where("brand", isEqualTo: brand)
+            .snapshots();
+
+        _specificBrand = collection;
+      } on FirebaseException catch (e) {
+        debugPrint('Database Error: [${e.code}]' ' ${e.message}');
+      }
+    }
+
+    return specificBrand;
   }
 }

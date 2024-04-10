@@ -15,7 +15,7 @@ class BrandButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(5.0),
       child: GestureDetector(
         onTap: onTap,
         child: Material(
@@ -26,13 +26,14 @@ class BrandButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 5),
-            height: 80.h,
-            width: 73.w,
+            height: 55.h,
+            width: 52.w,
             child: Image.asset(
               image,
               color: clickedBool
                   ? Theme.of(context).colorScheme.background
                   : Theme.of(context).colorScheme.primary,
+              fit: BoxFit.fitWidth,
             ),
           ),
         ),

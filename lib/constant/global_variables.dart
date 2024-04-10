@@ -11,6 +11,7 @@ class GlobalVariables {
   static String brandLogo2 = 'assets/brand_icons/Adidas logo.png';
   static String brandLogo3 = 'assets/brand_icons/Reebok logo.png';
   static String brandLogo4 = 'assets/brand_icons/Naked wolfe logo.png';
+  static String brandLogo5 = 'assets/brand_icons/New balance logo.png';
 
   static double sizeHeight(BuildContext context) {
     return MediaQuery.of(context).size.height;

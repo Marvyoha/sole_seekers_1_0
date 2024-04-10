@@ -13,6 +13,7 @@ dependencies:
   firebase_core:
   firebase_ui_firestore:
   flutter_native_splash: ^2.4.0
+  curved_navigation_bar:
   # cached_network_image:
   flutter:
     sdk: flutter
