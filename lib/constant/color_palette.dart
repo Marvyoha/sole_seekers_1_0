@@ -14,6 +14,6 @@ ThemeData darkMode = ThemeData(
   colorScheme: const ColorScheme.dark(
       brightness: Brightness.dark,
       background: Color(0xff222831),
-      primary: Color(0xffF7FAF7),
+      primary: Color.fromARGB(255, 228, 228, 228),
       secondary: Color(0xFF676767)),
 );

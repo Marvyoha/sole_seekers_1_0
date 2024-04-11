@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../checkoutpage.dart';
-import '../homepage.dart';
-import '../settingspage.dart';
-import '../wishlistpage.dart';
+import '../main_screens/checkout/checkoutpage.dart';
+import '../main_screens/homepage/homepage.dart';
+import '../main_screens/settings_page/settingspage.dart';
+import '../main_screens/wishlist/wishlistpage.dart';
 
 class MainNav extends StatefulWidget {
   final int? index;
@@ -32,6 +32,7 @@ class _MainNavState extends State<MainNav> {
       bottomNavigationBar: CurvedNavigationBar(
         height: 60.h,
         index: currentIndex,
+        animationDuration: const Duration(milliseconds: 400),
         color: Theme.of(context).colorScheme.primary,
         backgroundColor: Colors.transparent,
         buttonBackgroundColor: Colors.transparent,

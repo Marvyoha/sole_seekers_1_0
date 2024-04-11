@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../../constant/font_styles.dart';
-import '../../../constant/widgets/custom_button.dart';
-import '../../../constant/widgets/custom_textfield.dart';
-import '../../../core/providers/services_provider.dart';
+import '../../../../constant/font_styles.dart';
+import '../../../../constant/widgets/custom_button.dart';
+import '../../../../constant/widgets/custom_textfield.dart';
+import '../../../../core/providers/services_provider.dart';
 
 deleteAccountDialog(BuildContext context, ServicesProvider provider) {
   TextEditingController passwordController = TextEditingController();

@@ -1,11 +1,15 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carbon_icons/carbon_icons.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sole_seekers_1_0/constant/global_variables.dart';
 
-import '../../../constant/font_styles.dart';
-import '../../../constant/widgets/custom_textfield.dart';
+import '../../../../constant/font_styles.dart';
+import '../../../../constant/widgets/custom_textfield.dart';
+import '../../../misc_screens/product_details_page.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -94,6 +98,7 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void didChangeDependencies() {
     getCatalog(); // Fetching catalog data when dependencies change
+
     super.didChangeDependencies();
   }
 
@@ -113,27 +118,63 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
           GlobalVariables.spaceSmall(),
-          Expanded(
-            child: ListView.builder(
-              itemCount: resultList.length,
-              itemBuilder: (BuildContext context, int index) {
-                var items = resultList[index];
-                return ListTile(
-                  leading: CircleAvatar(
-                      radius: 24,
-                      backgroundImage: NetworkImage(items['image'])),
-                  title: Text(
-                    items['name'],
-                    style: WriteStyles.cardSubtitle(context).copyWith(),
+          searchController.text.isEmpty
+              ? Center(
+                  child: Column(
+                    children: [
+                      GlobalVariables.spaceLarge(context),
+                      const Icon(
+                        CarbonIcons.search,
+                        size: 90,
+                      ),
+                      Text(
+                        'Search for Shoes... ',
+                        style: WriteStyles.cardSubtitle(context).copyWith(),
+                      ),
+                    ],
                   ),
-                  subtitle: Text(
-                    '\$${items['price'].toString()}',
-                    style: WriteStyles.cardSubtitle(context).copyWith(),
+                )
+              : Expanded(
+                  child: ListView.builder(
+                    itemCount: resultList.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      var items = resultList[index];
+                      var id = items['id'];
+                      return GestureDetector(
+                        onTap: () => Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => ProductDetailsPage(
+                                      item: items,
+                                      id: id,
+                                    ))),
+                        child: ListTile(
+                          leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(90),
+                            child: Hero(
+                              tag: 'CatalogItem $id',
+                              child: CachedNetworkImage(
+                                key: UniqueKey(),
+                                height: 50.h,
+                                width: 50.w,
+                                imageUrl: items['image'],
+                                fit: BoxFit.fill,
+                              ),
+                            ),
+                          ),
+                          title: Text(
+                            items['name'],
+                            style: WriteStyles.cardSubtitle(context).copyWith(),
+                          ),
+                          subtitle: Text(
+                            '\$${items['price'].toString()}',
+                            style: WriteStyles.cardSubtitle(context).copyWith(),
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
-          ),
+                )
         ],
       ),
     ));

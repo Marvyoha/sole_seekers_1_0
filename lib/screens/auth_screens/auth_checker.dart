@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../main_screens/widgets/main_navigation.dart';
+import '../misc_screens/main_navigation.dart';
 import '../misc_screens/on_boarding.dart';
 
 class AuthChecker extends StatelessWidget {

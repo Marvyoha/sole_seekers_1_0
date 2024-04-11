@@ -1,18 +1,18 @@
 import 'package:carbon_icons/carbon_icons.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_ui_firestore/firebase_ui_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
-import '../../constant/font_styles.dart';
-import '../../constant/global_variables.dart';
-import '../../core/models/shoes_model.dart';
-import '../../core/providers/services_provider.dart';
-import '../../core/providers/theme_provider.dart';
-import 'widgets/brand_button.dart';
+import '../../../constant/font_styles.dart';
+import '../../../constant/global_variables.dart';
+import '../../../core/providers/query_provider.dart';
+import '../../../core/providers/services_provider.dart';
+import '../../misc_screens/product_details_page.dart';
+import 'widgets/brand_selection.dart';
 import 'widgets/searchpage.dart';
 
 class HomePage extends StatefulWidget {
@@ -22,53 +22,13 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-bool nike = false,
-    adidas = false,
-    reebok = false,
-    nakedWolfe = false,
-    newBalance = false;
-
-String checkSelectedBrand() {
-  if (nike) return 'nike';
-  if (adidas) return 'adidas';
-  if (reebok) return 'reebok';
-  if (nakedWolfe) return 'nakedWolfe';
-  if (newBalance) return 'newBalance';
-  return 'allItems';
-}
-
-Query<Item> querySetter() {
-  String selected = checkSelectedBrand();
-  Query<Item> newQuery;
-
-  switch (selected) {
-    case 'nike':
-      newQuery = ServicesProvider().shoesPGDb.where("brand", isEqualTo: 'nike');
-    case 'adidas':
-      newQuery =
-          ServicesProvider().shoesPGDb.where("brand", isEqualTo: 'adidas');
-    case 'reebok':
-      newQuery =
-          ServicesProvider().shoesPGDb.where("brand", isEqualTo: 'reebok');
-    case 'nakedWolfe':
-      newQuery =
-          ServicesProvider().shoesPGDb.where("brand", isEqualTo: 'nakedWolfe');
-    case 'newBalance':
-      newQuery =
-          ServicesProvider().shoesPGDb.where("brand", isEqualTo: 'newBalance');
-    default:
-      newQuery = ServicesProvider().shoesPGDb.orderBy('id');
-  }
-
-  return newQuery;
-}
-
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final servicesProvider =
         Provider.of<ServicesProvider>(context, listen: false);
     servicesProvider.getCurrentUserDoc();
+    final qp = Provider.of<QueryProvider>(context, listen: true);
 
     return Scaffold(
       body: Container(
@@ -138,7 +98,7 @@ class _HomePageState extends State<HomePage> {
                 const BrandList(),
                 // ITEMS
                 FirestoreQueryBuilder(
-                    query: querySetter(),
+                    query: qp.newQuery,
                     builder: (context, snapshot, _) {
                       if (snapshot.isFetching) {
                         return Column(
@@ -156,9 +116,7 @@ class _HomePageState extends State<HomePage> {
                         child: GridView.builder(
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 6,
-                                  mainAxisSpacing: 6),
+                                  crossAxisCount: 2, mainAxisExtent: 250),
                           itemCount: snapshot.docs.length,
                           itemBuilder: (BuildContext context, int index) {
                             // if we reached the end of the currently obtained items, we try to
@@ -170,27 +128,57 @@ class _HomePageState extends State<HomePage> {
                               snapshot.fetchMore();
                             }
                             final item = snapshot.docs[index];
-                            return Container(
-                              decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: NetworkImage(item['image'])),
-                                  borderRadius: BorderRadius.circular(30)),
+                            final id = item['id'];
+                            return GestureDetector(
+                              onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => ProductDetailsPage(
+                                            item: item,
+                                            id: id,
+                                          ))),
                               child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      item['id'].toString(),
-                                      style: WriteStyles.cardSubtitle(context)
-                                          .copyWith(),
-                                    ),
-                                    Text(
-                                      item['name'],
-                                      style: WriteStyles.cardSubtitle(context)
-                                          .copyWith(),
-                                    ),
-                                  ],
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 7),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(30)),
+                                  child: Column(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(30),
+                                        child: Hero(
+                                          tag: 'CatalogItem $id',
+                                          child: CachedNetworkImage(
+                                            key: UniqueKey(),
+                                            imageUrl: item['image'],
+                                            height: 150.h,
+                                            width: 150.w,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      GlobalVariables.spaceSmall(),
+                                      Text(
+                                        item['name'],
+                                        overflow: TextOverflow.ellipsis,
+                                        textAlign: TextAlign.center,
+                                        style: WriteStyles.bodySmall(context)
+                                            .copyWith(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary),
+                                      ),
+                                      SizedBox(height: 5.h),
+                                      Text(
+                                        ' \$${item['price'].toString()}',
+                                        style: WriteStyles.bodySmall(context)
+                                            .copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color: Color(0xff2A7351)),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             );
@@ -202,91 +190,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class BrandList extends StatefulWidget {
-  const BrandList({super.key});
-
-  @override
-  State<BrandList> createState() => _BrandListState();
-}
-
-class _BrandListState extends State<BrandList> {
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 80.h,
-      child: Wrap(
-        children: [
-          BrandButton(
-              onTap: () {
-                setState(() {
-                  nike = !nike;
-                  adidas = false;
-                  reebok = false;
-                  nakedWolfe = false;
-                  newBalance = false;
-                });
-                Navigator.pushReplacementNamed(context, 'mainNav');
-              },
-              clickedBool: nike,
-              image: GlobalVariables.brandLogo1),
-          BrandButton(
-              onTap: () {
-                setState(() {
-                  nike = false;
-                  adidas = !adidas;
-                  reebok = false;
-                  nakedWolfe = false;
-                  newBalance = false;
-                });
-                Navigator.pushReplacementNamed(context, 'mainNav');
-              },
-              clickedBool: adidas,
-              image: GlobalVariables.brandLogo2),
-          BrandButton(
-              onTap: () {
-                setState(() {
-                  nike = false;
-                  adidas = false;
-                  reebok = !reebok;
-                  nakedWolfe = false;
-                  newBalance = false;
-                });
-                Navigator.pushReplacementNamed(context, 'mainNav');
-              },
-              clickedBool: reebok,
-              image: GlobalVariables.brandLogo3),
-          BrandButton(
-              onTap: () {
-                setState(() {
-                  nike = false;
-                  adidas = false;
-                  reebok = false;
-                  nakedWolfe = !nakedWolfe;
-                  newBalance = false;
-                });
-                Navigator.pushReplacementNamed(context, 'mainNav');
-              },
-              clickedBool: nakedWolfe,
-              image: GlobalVariables.brandLogo4),
-          BrandButton(
-              onTap: () {
-                setState(() {
-                  nike = false;
-                  adidas = false;
-                  reebok = false;
-                  nakedWolfe = false;
-                  newBalance = !newBalance;
-                });
-                Navigator.pushReplacementNamed(context, 'mainNav');
-              },
-              clickedBool: newBalance,
-              image: GlobalVariables.brandLogo5),
-        ],
       ),
     );
   }

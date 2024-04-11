@@ -19,8 +19,8 @@ Future<void> main() async {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => ServicesProvider()),
+      ChangeNotifierProvider(create: (context) => QueryProvider()),
       ChangeNotifierProvider(create: (context) => ThemeProvider()),
-      ChangeNotifierProvider(create: (context) => QueryProvider())
     ],
     child: const MainApp(),
   ));
@@ -33,13 +33,14 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: const Size(360, 800),
-      builder: (context, child) => MaterialApp(
+      builder: (context, child) => const MaterialApp(
         title: 'SoleSeekers',
         debugShowCheckedModeBanner: false,
         onGenerateRoute: RouteGenerator.generateRoute,
         initialRoute: 'authChecker',
+        themeMode: ThemeMode.system,
         // theme: lightMode,
-        theme: Provider.of<ThemeProvider>(context).themeMode,
+        // theme: Provider.of<ThemeProvider>(context).themeMode,
       ),
     );
   }
