@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../main_screens/checkout/checkoutpage.dart';
+import '../main_screens/cartpage/cartpage.dart';
 import '../main_screens/homepage/homepage.dart';
 import '../main_screens/settings_page/settingspage.dart';
 import '../main_screens/wishlist/wishlistpage.dart';
@@ -18,7 +18,7 @@ class MainNav extends StatefulWidget {
 
 final List<Widget> pages = [
   const HomePage(),
-  const CheckoutPage(),
+  const CartPage(),
   const WishListPage(),
   const SettingsPage()
 ];
@@ -45,7 +45,7 @@ class _MainNavState extends State<MainNav> {
                 : Theme.of(context).colorScheme.background,
           ),
           Icon(
-            CarbonIcons.money,
+            CarbonIcons.shopping_cart,
             size: 30,
             color: currentIndex == 1
                 ? Theme.of(context).colorScheme.primary

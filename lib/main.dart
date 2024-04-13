@@ -33,13 +33,12 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: const Size(360, 800),
-      builder: (context, child) => const MaterialApp(
+      builder: (context, child) => MaterialApp(
         title: 'SoleSeekers',
         debugShowCheckedModeBanner: false,
         onGenerateRoute: RouteGenerator.generateRoute,
         initialRoute: 'authChecker',
-        themeMode: ThemeMode.system,
-        // theme: lightMode,
+        theme: lightMode,
         // theme: Provider.of<ThemeProvider>(context).themeMode,
       ),
     );

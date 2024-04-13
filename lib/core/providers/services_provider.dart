@@ -9,11 +9,15 @@ import 'package:flutter/material.dart';
 // import 'package:fluttertoast/fluttertoast.dart';
 
 class ServicesProvider extends ChangeNotifier {
+  ServicesProvider() {
+    getCurrentUserDoc();
+    getCatalogs();
+  }
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String? docId;
 
-  List? _catalogs;
+  List<QueryDocumentSnapshot>? _catalogs;
   Map<String, dynamic>? _currentUserDoc;
   bool _loader = false;
 
@@ -21,7 +25,7 @@ class ServicesProvider extends ChangeNotifier {
   FirebaseFirestore? get firestore => _firestore;
   FirebaseAuth? get auth => _auth;
   User? get user => _auth.currentUser;
-  List? get catalogs => _catalogs;
+  List<QueryDocumentSnapshot>? get catalogs => _catalogs;
   Map<String, dynamic>? get currentUserDoc => _currentUserDoc;
   bool get loader => _loader;
 
@@ -48,7 +52,7 @@ class ServicesProvider extends ChangeNotifier {
           // Navigate to home
           Navigator.pushReplacementNamed(
             context,
-            'homePage',
+            'mainNav',
           );
         }
       });
@@ -170,6 +174,7 @@ class ServicesProvider extends ChangeNotifier {
 
   Future<void> signOut(BuildContext context) async {
     await _auth.signOut();
+
     Future.delayed(const Duration(milliseconds: 1700), () {
       Navigator.pushReplacementNamed(context, 'login');
     });
@@ -216,7 +221,7 @@ class ServicesProvider extends ChangeNotifier {
 
 // FIREBASE CLOUD FIRESTORE DATABASE FUNTIONS
 
-  getCatalogs() async {
+  Future getCatalogs() async {
     QuerySnapshot<Map<String, dynamic>>? data =
         await firestore?.collection('catalogs').orderBy('id').get();
     _catalogs = data?.docs;
@@ -231,9 +236,9 @@ class ServicesProvider extends ChangeNotifier {
         'uid': user?.uid,
         'email': email.trim(),
         'username': username.trim(),
-        'isFavorited': [],
-        'checkout': [],
-        'purchased': [],
+        'wishlist': [],
+        'cart': [],
+        'purchase_history': [],
       });
     } on FirebaseException catch (e) {
       debugPrint('Database Error: [${e.code}]' ' ${e.message}');
@@ -271,5 +276,85 @@ class ServicesProvider extends ChangeNotifier {
     } on FirebaseException catch (e) {
       debugPrint('Database Error: [${e.code}]' ' ${e.message}');
     }
+  }
+
+  Future<void> addToWishlist({required int id}) async {
+    try {
+      await firestore?.collection('users').doc(docId).update({
+        'wishlist': FieldValue.arrayUnion([id]),
+      });
+    } on FirebaseException catch (e) {
+      debugPrint('Database Error: [${e.code}]' ' ${e.message}');
+    }
+    notifyListeners();
+  }
+
+  Future<void> removeFromWishlist({required int id}) async {
+    try {
+      await firestore?.collection('users').doc(docId).update({
+        'wishlist': FieldValue.arrayRemove([id]),
+      });
+    } on FirebaseException catch (e) {
+      debugPrint('Database Error: [${e.code}]' ' ${e.message}');
+    }
+    notifyListeners();
+  }
+
+  Future<void> addToCart({required Map cartDetails}) async {
+    try {
+      await firestore?.collection('users').doc(docId).update({
+        'cart': FieldValue.arrayUnion([cartDetails]),
+      });
+    } on FirebaseException catch (e) {
+      debugPrint('Database Error: [${e.code}]' ' ${e.message}');
+    }
+    notifyListeners();
+  }
+
+  Future<void> removeFromCart({required Map cartDetails}) async {
+    try {
+      await firestore?.collection('users').doc(docId).update({
+        'cart': FieldValue.arrayRemove([cartDetails]),
+      });
+    } on FirebaseException catch (e) {
+      debugPrint('Database Error: [${e.code}]' ' ${e.message}');
+    }
+    notifyListeners();
+  }
+
+  List<Map> getWishlist() {
+    List<Map> wishlist = [];
+    try {
+      for (int id in _currentUserDoc?['wishlist']) {
+        for (var element in catalogs!) {
+          if (element['id'] == id) {
+            wishlist.add(element.data() as Map<dynamic, dynamic>);
+          }
+        }
+      }
+    } on FirebaseException catch (e) {
+      debugPrint('Database Error: [${e.code}]' ' ${e.message}');
+    }
+    notifyListeners();
+    return wishlist;
+  }
+
+  Future<List<Map>> getCart() async {
+    List<Map> cart = [];
+    try {
+      await getCurrentUserDoc();
+      await getCatalogs();
+      for (int id in _currentUserDoc?['cart']) {
+        for (var element in catalogs!) {
+          if (element['id'] == id) {
+            cart.add(element.data() as Map<dynamic, dynamic>);
+          }
+        }
+      }
+    } on FirebaseException catch (e) {
+      debugPrint('Database Error: [${e.code}]' ' ${e.message}');
+    }
+    notifyListeners();
+    return cart;
   }
 }

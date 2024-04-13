@@ -46,12 +46,18 @@ class _SearchPageState extends State<SearchPage> {
   searchResultList() {
     // Method to update the search results list
     var showResults = []; // Initializing a list to store filtered results
-    if (searchController.text == '') {
-      // If search input is empty
-      showResults =
-          List.from(catalogs); // Copying all catalog data to results list
-    } else {
+    if (int.tryParse(searchController.text) != null) {
       // If the search input is not empty
+      for (var snapshot in catalogs) {
+        // Iterating through the catalog data
+        var price = snapshot['price']
+            .toString(); // Getting the price from the catalog data
+        if (price.contains(searchController.text)) {
+          // Checking if the name contains the search input
+          showResults.add(snapshot); // Adding the snapshot to the results list
+        }
+      }
+    } else {
       for (var snapshot in catalogs) {
         // Iterating through the catalog data
         var name = snapshot['name']
@@ -63,6 +69,7 @@ class _SearchPageState extends State<SearchPage> {
         }
       }
     }
+
     setState(() {
       // Updating the state
       resultList = showResults; // Setting the search results list

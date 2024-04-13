@@ -2,7 +2,6 @@ import 'package:carbon_icons/carbon_icons.dart';
 import 'package:firebase_ui_firestore/firebase_ui_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -175,7 +174,7 @@ class _HomePageState extends State<HomePage> {
                                         style: WriteStyles.bodySmall(context)
                                             .copyWith(
                                                 fontWeight: FontWeight.bold,
-                                                color: Color(0xff2A7351)),
+                                                color: const Color(0xff2A7351)),
                                       ),
                                     ],
                                   ),
