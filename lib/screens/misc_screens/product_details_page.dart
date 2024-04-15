@@ -12,6 +12,7 @@ import 'package:sole_seekers_1_0/constant/global_variables.dart';
 import 'package:sole_seekers_1_0/constant/widgets/custom_button.dart';
 
 import '../../core/models/shoes_model.dart';
+import '../../core/models/user_info.dart';
 import '../../core/providers/services_provider.dart';
 
 class ProductDetailsPage extends StatefulWidget {
@@ -49,10 +50,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   Widget build(BuildContext context) {
     final servicesProvider =
         Provider.of<ServicesProvider>(context, listen: true);
-    servicesProvider.getCurrentUserDoc();
     bool wishListChecker() {
       bool checker;
-      List wishlist = servicesProvider.currentUserDoc?['wishlist'];
+      List wishlist = servicesProvider.userDetails!.wishlist;
       if (wishlist.contains(widget.item['id'])) {
         checker = true;
       } else {
@@ -89,6 +89,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         tag: 'CatalogItem ${widget.id}',
                         child: CachedNetworkImage(
                           key: UniqueKey(),
+                          placeholder: (context, url) {
+                            return Image.asset(GlobalVariables.appIcon);
+                          },
                           imageUrl: widget.item['image'],
                           width: 343.w,
                           height: 286.h,
@@ -168,11 +171,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     // ADD TO CART BUTTON
                     GestureDetector(
                       onTap: () async {
-                        Map<String, dynamic> addItemtoCart = {
-                          'id': widget.id,
-                          'quantity': quantity,
-                          'total': total
-                        };
+                        Cart addItemtoCart = Cart(
+                            id: widget.id, quantity: quantity, total: total);
+
                         await servicesProvider.addToCart(
                             cartDetails: addItemtoCart);
 

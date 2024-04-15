@@ -1,5 +1,5 @@
 name: sole_seekers_1_0
-description: "A Final Year Flutter project."
+description: "My Final Year Flutter project."
 publish_to: 'none'
 version: 0.1.0
 
@@ -15,7 +15,9 @@ dependencies:
   flutter_native_splash: ^2.4.0
   curved_navigation_bar:
   cached_network_image: ^3.3.1
-  # cached_network_image:
+  hive_flutter:
+  connectivity_plus: ^6.0.2
+  internet_connection_checker: 1.0.0+1
   flutter:
     sdk: flutter
   flutter_screenutil: 

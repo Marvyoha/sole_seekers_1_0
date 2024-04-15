@@ -150,6 +150,10 @@ class _HomePageState extends State<HomePage> {
                                           tag: 'CatalogItem $id',
                                           child: CachedNetworkImage(
                                             key: UniqueKey(),
+                                            placeholder: (context, url) {
+                                              return Image.asset(
+                                                  GlobalVariables.appIcon);
+                                            },
                                             imageUrl: item['image'],
                                             height: 150.h,
                                             width: 150.w,

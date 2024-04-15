@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class GlobalVariables {
-  static String appIcon = 'assets/SoleSeekers app icon.jpg';
+  static String appIcon = 'assets/SoleSeekers app icon.png';
   static String logo = 'assets/SoleSeekers Logo.png';
   static String onboardimage1 = 'assets/On boarding pic.png';
   static String onboardimage2 = 'assets/On boarding pic2.png';

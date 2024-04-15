@@ -164,6 +164,9 @@ class _SearchPageState extends State<SearchPage> {
                                 key: UniqueKey(),
                                 height: 50.h,
                                 width: 50.w,
+                                placeholder: (context, url) {
+                                  return Image.asset(GlobalVariables.appIcon);
+                                },
                                 imageUrl: items['image'],
                                 fit: BoxFit.fill,
                               ),

@@ -27,19 +27,19 @@ class _WishListPageState extends State<WishListPage> {
   Widget build(BuildContext context) {
     final servicesProvider =
         Provider.of<ServicesProvider>(context, listen: true);
-    servicesProvider.getCurrentUserDoc();
-    servicesProvider.getCatalogs();
+    // servicesProvider.getCurrentUserDoc();
+    // servicesProvider.getCatalogs();
 
     List<Map> wishlistArray = servicesProvider.getWishlist();
     bool checkFavorites() {
-      if (servicesProvider.currentUserDoc?['wishlist'].isEmpty) {
+      if (servicesProvider.userDetails!.wishlist.isEmpty) {
         return true;
       } else {
         return false;
       }
     }
 
-    bool isFilled = checkFavorites();
+    bool isEmpty = checkFavorites();
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -50,7 +50,7 @@ class _WishListPageState extends State<WishListPage> {
                 .copyWith(color: Theme.of(context).colorScheme.primary),
           ),
         ),
-        body: isFilled
+        body: isEmpty
             ? Center(
                 child: Column(
                   children: [
@@ -73,78 +73,94 @@ class _WishListPageState extends State<WishListPage> {
                   itemBuilder: (BuildContext context, int index) {
                     final item = wishlistArray[index];
                     final id = item['id'];
-
-                    return GestureDetector(
-                      onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => ProductDetailsPage(
-                                    item: item,
-                                    id: id,
-                                  ))),
-                      child: Container(
-                        padding: GlobalVariables.normPadding,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30)),
-                        child: Stack(
-                          children: [
-                            Row(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(30),
-                                  child: Hero(
-                                    tag: 'CatalogItem $id',
-                                    child: CachedNetworkImage(
-                                      key: UniqueKey(),
-                                      imageUrl: item['image'],
-                                      height: 90.h,
-                                      width: 90.w,
-                                      fit: BoxFit.cover,
+                    return Column(
+                      children: [
+                        Padding(
+                          padding: GlobalVariables.normPadding,
+                          child: GestureDetector(
+                            onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => ProductDetailsPage(
+                                          item: item,
+                                          id: id,
+                                        ))),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30)),
+                              child: Row(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(30),
+                                    child: Hero(
+                                      tag: 'CatalogItem $id',
+                                      child: CachedNetworkImage(
+                                        key: UniqueKey(),
+                                        placeholder: (context, url) {
+                                          return Image.asset(
+                                              GlobalVariables.appIcon);
+                                        },
+                                        imageUrl: item['image'],
+                                        height: 90.h,
+                                        width: 90.w,
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                GlobalVariables.spaceSmall(isWidth: true),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      item['name'],
-                                      overflow: TextOverflow.clip,
-                                      style: WriteStyles.bodySmall(context)
-                                          .copyWith(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary),
+                                  GlobalVariables.spaceSmall(isWidth: true),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          item['name'],
+                                          overflow: TextOverflow.ellipsis,
+                                          style: WriteStyles.bodySmall(context)
+                                              .copyWith(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .primary),
+                                        ),
+                                        SizedBox(height: 5.h),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              ' \$${item['price'].toString()}',
+                                              style:
+                                                  WriteStyles.bodySmall(context)
+                                                      .copyWith(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color: const Color(
+                                                              0xff2A7351)),
+                                            ),
+                                            IconButton(
+                                                onPressed: () {
+                                                  servicesProvider
+                                                      .removeFromWishlist(
+                                                          id: item['id']);
+                                                  // setState(
+                                                  //     () {}); // Add this line to trigger a rebuild of the entire page
+                                                },
+                                                icon: const Icon(
+                                                  CarbonIcons.star_filled,
+                                                  size: 30,
+                                                )),
+                                          ],
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(height: 5.h),
-                                    Text(
-                                      ' \$${item['price'].toString()}',
-                                      style: WriteStyles.bodySmall(context)
-                                          .copyWith(
-                                              fontWeight: FontWeight.bold,
-                                              color: const Color(0xff2A7351)),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                  ),
+                                ],
+                              ),
                             ),
-                            Align(
-                              alignment: Alignment.topRight,
-                              child: IconButton(
-                                  onPressed: () {
-                                    servicesProvider.removeFromWishlist(
-                                        id: item['id']);
-                                    setState(
-                                        () {}); // Add this line to trigger a rebuild of the entire page
-                                  },
-                                  icon: const Icon(
-                                    CarbonIcons.star_filled,
-                                    size: 30,
-                                  )),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
+                        GlobalVariables.spaceSmall()
+                      ],
                     );
                   },
                 ),

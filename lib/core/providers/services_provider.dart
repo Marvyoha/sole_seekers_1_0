@@ -1,41 +1,56 @@
 // ignore_for_file: use_build_context_synchronously, unnecessary_getters_setters
-
-import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+import '../models/user_info.dart';
 
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
 // import 'package:fluttertoast/fluttertoast.dart';
+final Box locale = Hive.box('localStorage');
 
 class ServicesProvider extends ChangeNotifier {
   ServicesProvider() {
+    // checkInternetConnection();
     getCurrentUserDoc();
-    getCatalogs();
+    loadCatalog();
   }
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String? docId;
-
+  // final Connectivity _connectivity = Connectivity();
   List<QueryDocumentSnapshot>? _catalogs;
-  Map<String, dynamic>? _currentUserDoc;
+  UserDetails? _userDetails;
   bool _loader = false;
 
   //Getters
+  // Connectivity? get connectionStatus => _connectionStatus;
   FirebaseFirestore? get firestore => _firestore;
   FirebaseAuth? get auth => _auth;
   User? get user => _auth.currentUser;
   List<QueryDocumentSnapshot>? get catalogs => _catalogs;
-  Map<String, dynamic>? get currentUserDoc => _currentUserDoc;
+
+  UserDetails? get userDetails => _userDetails;
   bool get loader => _loader;
 
   //Setters
+
+  // set connectionStatus(Connectivity? newStatus) {
+  //   _connectionStatus = newStatus;
+  // }
+
   set loader(bool newLoader) {
     _loader = newLoader;
   }
 
-  set currentUserDoc(Map<String, dynamic>? newUserDoc) {
-    _currentUserDoc = newUserDoc;
+  set catalogs(List<QueryDocumentSnapshot>? newCatalogs) {
+    _catalogs = newCatalogs;
+  }
+
+  set userDetails(UserDetails? newUserDetails) {
+    _userDetails = newUserDetails;
   }
 
 // FIREBASE AUTHENTICATION FUNCTIONS
@@ -198,7 +213,7 @@ class ServicesProvider extends ChangeNotifier {
         await firestore?.collection('users').doc(docId).delete();
 
         // TO CLEAR LOCAL DATA
-        currentUserDoc = {};
+        userDetails = null;
         docId = '';
       }
     } on FirebaseAuthException catch (e) {
@@ -220,7 +235,6 @@ class ServicesProvider extends ChangeNotifier {
   }
 
 // FIREBASE CLOUD FIRESTORE DATABASE FUNTIONS
-
   Future getCatalogs() async {
     QuerySnapshot<Map<String, dynamic>>? data =
         await firestore?.collection('catalogs').orderBy('id').get();
@@ -245,14 +259,16 @@ class ServicesProvider extends ChangeNotifier {
     }
   }
 
-  Future<Map<String, dynamic>?> getCurrentUserDoc() async {
+  Future<void> getCurrentUserDoc() async {
     try {
       var collection = await firestore?.collection('users').get();
       if (collection != null) {
         for (var element in collection.docs) {
           if (element['uid'] == user?.uid) {
             docId = element.id;
-            _currentUserDoc = element.data();
+            Map<String, dynamic> rawData = element.data();
+            userDetails = UserDetails.fromJson(rawData);
+
             break;
           }
         }
@@ -260,7 +276,6 @@ class ServicesProvider extends ChangeNotifier {
     } on FirebaseException catch (e) {
       debugPrint('Database Error: [${e.code}]' ' ${e.message}');
     }
-    return currentUserDoc;
   }
 
   Future<void> updateUserName({
@@ -269,9 +284,8 @@ class ServicesProvider extends ChangeNotifier {
     try {
       if (docId != null) {
         await user?.updateDisplayName(username);
-        await firestore?.collection('users').doc(docId).update({
-          'username': username?.trim(),
-        });
+        userDetails?.username = username!.trim();
+        updateUserDetails();
       }
     } on FirebaseException catch (e) {
       debugPrint('Database Error: [${e.code}]' ' ${e.message}');
@@ -280,9 +294,8 @@ class ServicesProvider extends ChangeNotifier {
 
   Future<void> addToWishlist({required int id}) async {
     try {
-      await firestore?.collection('users').doc(docId).update({
-        'wishlist': FieldValue.arrayUnion([id]),
-      });
+      userDetails?.wishlist.add(id);
+      updateUserDetails();
     } on FirebaseException catch (e) {
       debugPrint('Database Error: [${e.code}]' ' ${e.message}');
     }
@@ -291,31 +304,28 @@ class ServicesProvider extends ChangeNotifier {
 
   Future<void> removeFromWishlist({required int id}) async {
     try {
-      await firestore?.collection('users').doc(docId).update({
-        'wishlist': FieldValue.arrayRemove([id]),
-      });
+      userDetails?.wishlist.remove(id);
+      updateUserDetails();
     } on FirebaseException catch (e) {
       debugPrint('Database Error: [${e.code}]' ' ${e.message}');
     }
     notifyListeners();
   }
 
-  Future<void> addToCart({required Map cartDetails}) async {
+  Future<void> addToCart({required Cart cartDetails}) async {
     try {
-      await firestore?.collection('users').doc(docId).update({
-        'cart': FieldValue.arrayUnion([cartDetails]),
-      });
+      userDetails?.cart.add(cartDetails);
+      updateUserDetails();
     } on FirebaseException catch (e) {
       debugPrint('Database Error: [${e.code}]' ' ${e.message}');
     }
     notifyListeners();
   }
 
-  Future<void> removeFromCart({required Map cartDetails}) async {
+  Future<void> removeFromCart({required Cart cartDetails}) async {
     try {
-      await firestore?.collection('users').doc(docId).update({
-        'cart': FieldValue.arrayRemove([cartDetails]),
-      });
+      userDetails?.cart.remove(cartDetails);
+      updateUserDetails();
     } on FirebaseException catch (e) {
       debugPrint('Database Error: [${e.code}]' ' ${e.message}');
     }
@@ -325,7 +335,7 @@ class ServicesProvider extends ChangeNotifier {
   List<Map> getWishlist() {
     List<Map> wishlist = [];
     try {
-      for (int id in _currentUserDoc?['wishlist']) {
+      for (int id in userDetails!.wishlist) {
         for (var element in catalogs!) {
           if (element['id'] == id) {
             wishlist.add(element.data() as Map<dynamic, dynamic>);
@@ -342,11 +352,9 @@ class ServicesProvider extends ChangeNotifier {
   Future<List<Map>> getCart() async {
     List<Map> cart = [];
     try {
-      await getCurrentUserDoc();
-      await getCatalogs();
-      for (int id in _currentUserDoc?['cart']) {
+      for (Cart item in userDetails!.cart) {
         for (var element in catalogs!) {
-          if (element['id'] == id) {
+          if (element['id'] == item.id) {
             cart.add(element.data() as Map<dynamic, dynamic>);
           }
         }
@@ -357,4 +365,44 @@ class ServicesProvider extends ChangeNotifier {
     notifyListeners();
     return cart;
   }
+
+  Future<void> updateUserDetails() async {
+    try {
+      await user?.updateDisplayName(userDetails?.username);
+      var updateUser = userDetails?.toJson();
+      await firestore
+          ?.collection('users')
+          .doc(docId)
+          .update(updateUser!.cast<Object, Object?>());
+    } on FirebaseException catch (e) {
+      debugPrint('Updating user_info Error: [${e.code}]' ' ${e.message}');
+    }
+  }
+
+  // Future<void> updateUserDetails() async {
+  //   try {
+  //     await user?.updateDisplayName(userDetails?.username);
+  //     await firestore?.collection('users').doc(docId).update({
+  //       'username': userDetails?.username.trim(),
+  //       'wishlist': userDetails?.wishlist,
+  //       'cart': userDetails?.cart,
+  //       'purchase_history': userDetails?.purchaseHistory,
+  //     });
+  //   } on FirebaseException catch (e) {
+  //     debugPrint('Updating user_info Error: [${e.code}]' ' ${e.message}');
+  //   }
+  // }
+
+  // LOCAL STORAGE FUNCTIONS (HIVE)
+  loadCatalog() async {
+    //  var raw = locale.get('catalogs');
+    if (locale.isEmpty) {
+      await getCatalogs();
+      locale.put('catalogs', catalogs);
+    }
+    catalogs = locale.get('catalogs');
+    return locale.get('catalogs');
+  }
+
+  // INTERNET CONNECTIVITY FUNCTIONS
 }
