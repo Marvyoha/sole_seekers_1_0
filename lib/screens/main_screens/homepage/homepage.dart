@@ -3,11 +3,13 @@ import 'package:firebase_ui_firestore/firebase_ui_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../constant/font_styles.dart';
 import '../../../constant/global_variables.dart';
+import '../../../core/models/user_info.dart';
 import '../../../core/providers/query_provider.dart';
 import '../../../core/providers/services_provider.dart';
 import '../../misc_screens/product_details_page.dart';
@@ -126,6 +128,7 @@ class _HomePageState extends State<HomePage> {
                               // It is safe to call this function from within the build method.
                               snapshot.fetchMore();
                             }
+
                             final item = snapshot.docs[index];
                             final id = item['id'];
                             return GestureDetector(
@@ -178,7 +181,9 @@ class _HomePageState extends State<HomePage> {
                                         style: WriteStyles.bodySmall(context)
                                             .copyWith(
                                                 fontWeight: FontWeight.bold,
-                                                color: const Color(0xff2A7351)),
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .tertiary),
                                       ),
                                     ],
                                   ),

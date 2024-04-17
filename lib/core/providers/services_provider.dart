@@ -14,6 +14,7 @@ class ServicesProvider extends ChangeNotifier {
   ServicesProvider() {
     // checkInternetConnection();
     getCurrentUserDoc();
+    // locale.delete('catalogs');
     loadCatalog();
   }
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -292,46 +293,6 @@ class ServicesProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> addToWishlist({required int id}) async {
-    try {
-      userDetails?.wishlist.add(id);
-      updateUserDetails();
-    } on FirebaseException catch (e) {
-      debugPrint('Database Error: [${e.code}]' ' ${e.message}');
-    }
-    notifyListeners();
-  }
-
-  Future<void> removeFromWishlist({required int id}) async {
-    try {
-      userDetails?.wishlist.remove(id);
-      updateUserDetails();
-    } on FirebaseException catch (e) {
-      debugPrint('Database Error: [${e.code}]' ' ${e.message}');
-    }
-    notifyListeners();
-  }
-
-  Future<void> addToCart({required Cart cartDetails}) async {
-    try {
-      userDetails?.cart.add(cartDetails);
-      updateUserDetails();
-    } on FirebaseException catch (e) {
-      debugPrint('Database Error: [${e.code}]' ' ${e.message}');
-    }
-    notifyListeners();
-  }
-
-  Future<void> removeFromCart({required Cart cartDetails}) async {
-    try {
-      userDetails?.cart.remove(cartDetails);
-      updateUserDetails();
-    } on FirebaseException catch (e) {
-      debugPrint('Database Error: [${e.code}]' ' ${e.message}');
-    }
-    notifyListeners();
-  }
-
   List<Map> getWishlist() {
     List<Map> wishlist = [];
     try {
@@ -345,11 +306,31 @@ class ServicesProvider extends ChangeNotifier {
     } on FirebaseException catch (e) {
       debugPrint('Database Error: [${e.code}]' ' ${e.message}');
     }
-    notifyListeners();
+
     return wishlist;
   }
 
-  Future<List<Map>> getCart() async {
+  void addToWishlist({required int id}) {
+    try {
+      userDetails?.wishlist.add(id);
+      updateUserDetails();
+    } on FirebaseException catch (e) {
+      debugPrint('Database Error: [${e.code}]' ' ${e.message}');
+    }
+    notifyListeners();
+  }
+
+  void removeFromWishlist({required int id}) {
+    try {
+      userDetails?.wishlist.remove(id);
+      updateUserDetails();
+    } on FirebaseException catch (e) {
+      debugPrint('Database Error: [${e.code}]' ' ${e.message}');
+    }
+    notifyListeners();
+  }
+
+  getCart() {
     List<Map> cart = [];
     try {
       for (Cart item in userDetails!.cart) {
@@ -360,10 +341,48 @@ class ServicesProvider extends ChangeNotifier {
         }
       }
     } on FirebaseException catch (e) {
+      debugPrint('Database Error: [${e.code}] ${e.message}');
+    }
+    return cart;
+  }
+
+  void addToCart({required Cart cartDetails}) {
+    try {
+      for (Cart element in userDetails!.cart) {
+        if (element.id == cartDetails.id) {
+          cartDetails.quantity += element.quantity;
+          cartDetails.total += element.total;
+          userDetails!.cart
+              .removeWhere((element) => element.id == cartDetails.id);
+          break;
+        }
+      }
+
+      userDetails?.cart.add(cartDetails);
+      updateUserDetails();
+    } on FirebaseException catch (e) {
       debugPrint('Database Error: [${e.code}]' ' ${e.message}');
     }
     notifyListeners();
-    return cart;
+  }
+
+  void removeFromCart({required Cart cartDetails}) {
+    try {
+      userDetails?.cart.remove(cartDetails);
+      updateUserDetails();
+    } on FirebaseException catch (e) {
+      debugPrint('Database Error: [${e.code}]' ' ${e.message}');
+    }
+    notifyListeners();
+  }
+
+  int getSubTotal() {
+    int cartTotal = 0;
+    for (Cart element in userDetails!.cart) {
+      cartTotal += element.total;
+    }
+
+    return cartTotal;
   }
 
   Future<void> updateUserDetails() async {
@@ -403,6 +422,4 @@ class ServicesProvider extends ChangeNotifier {
     catalogs = locale.get('catalogs');
     return locale.get('catalogs');
   }
-
-  // INTERNET CONNECTIVITY FUNCTIONS
 }

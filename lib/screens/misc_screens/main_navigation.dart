@@ -6,9 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 import '../../constant/font_styles.dart';
+import '../../constant/global_variables.dart';
 import '../main_screens/cartpage/cartpage.dart';
 import '../main_screens/homepage/homepage.dart';
 import '../main_screens/settings_page/settingspage.dart';
@@ -56,8 +58,13 @@ class _MainNavState extends State<MainNav> {
         builder: (context) {
           return AlertDialog(
             backgroundColor: Theme.of(context).colorScheme.background,
-            title: const Text(
+            title: Text(
               "Lost Internet Connection",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.primary),
             ),
             content: SizedBox(
               height: 145.h,
@@ -69,7 +76,8 @@ class _MainNavState extends State<MainNav> {
                     size: 90,
                   ),
                   Text(
-                    'No Internet Connection Exit the app and try again.',
+                    'No Internet Connection,\n Try again or exit the app.',
+                    textAlign: TextAlign.center,
                     style: WriteStyles.bodyMedium(context)
                         .copyWith(color: Theme.of(context).colorScheme.primary),
                   ),

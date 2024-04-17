@@ -31,7 +31,7 @@ class _WishListPageState extends State<WishListPage> {
     // servicesProvider.getCatalogs();
 
     List<Map> wishlistArray = servicesProvider.getWishlist();
-    bool checkFavorites() {
+    bool isWishlisted() {
       if (servicesProvider.userDetails!.wishlist.isEmpty) {
         return true;
       } else {
@@ -39,131 +39,134 @@ class _WishListPageState extends State<WishListPage> {
       }
     }
 
-    bool isEmpty = checkFavorites();
+    bool isEmpty = isWishlisted();
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          centerTitle: true,
-          title: Text(
-            'Wish List',
-            style: WriteStyles.headerMedium(context)
-                .copyWith(color: Theme.of(context).colorScheme.primary),
-          ),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        centerTitle: true,
+        title: Text(
+          'Wish List',
+          style: WriteStyles.headerMedium(context)
+              .copyWith(color: Theme.of(context).colorScheme.primary),
         ),
-        body: isEmpty
-            ? Center(
-                child: Column(
+      ),
+      body: isEmpty
+          ? Center(
+              child: Column(
+                children: [
+                  GlobalVariables.spaceLarge(context),
+                  GlobalVariables.spaceLarge(context),
+                  const Icon(
+                    CarbonIcons.star_review,
+                    size: 90,
+                  ),
+                  GlobalVariables.spaceMedium(),
+                  Text(
+                    'No Wishlisted Shoes... ',
+                    style: WriteStyles.headerMedium(context)
+                        .copyWith(fontWeight: FontWeight.normal),
+                  ),
+                ],
+              ),
+            )
+          : ListView.builder(
+              itemCount: wishlistArray.length,
+              itemBuilder: (BuildContext context, int index) {
+                final item = wishlistArray[index];
+                final id = item['id'];
+                return Column(
                   children: [
-                    GlobalVariables.spaceLarge(context),
-                    const Icon(
-                      CarbonIcons.star_review,
-                      size: 90,
-                    ),
-                    Text(
-                      'No Wishlisted Shoes... ',
-                      style: WriteStyles.headerMedium(context)
-                          .copyWith(fontWeight: FontWeight.normal),
-                    ),
-                  ],
-                ),
-              )
-            : Expanded(
-                child: ListView.builder(
-                  itemCount: wishlistArray.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final item = wishlistArray[index];
-                    final id = item['id'];
-                    return Column(
-                      children: [
-                        Padding(
-                          padding: GlobalVariables.normPadding,
-                          child: GestureDetector(
-                            onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => ProductDetailsPage(
-                                          item: item,
-                                          id: id,
-                                        ))),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(30)),
-                              child: Row(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(30),
-                                    child: Hero(
-                                      tag: 'CatalogItem $id',
-                                      child: CachedNetworkImage(
-                                        key: UniqueKey(),
-                                        placeholder: (context, url) {
-                                          return Image.asset(
-                                              GlobalVariables.appIcon);
-                                        },
-                                        imageUrl: item['image'],
-                                        height: 90.h,
-                                        width: 90.w,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                  GlobalVariables.spaceSmall(isWidth: true),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          item['name'],
-                                          overflow: TextOverflow.ellipsis,
-                                          style: WriteStyles.bodySmall(context)
-                                              .copyWith(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .primary),
-                                        ),
-                                        SizedBox(height: 5.h),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              ' \$${item['price'].toString()}',
-                                              style:
-                                                  WriteStyles.bodySmall(context)
-                                                      .copyWith(
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color: const Color(
-                                                              0xff2A7351)),
-                                            ),
-                                            IconButton(
-                                                onPressed: () {
-                                                  servicesProvider
-                                                      .removeFromWishlist(
-                                                          id: item['id']);
-                                                  // setState(
-                                                  //     () {}); // Add this line to trigger a rebuild of the entire page
-                                                },
-                                                icon: const Icon(
-                                                  CarbonIcons.star_filled,
-                                                  size: 30,
-                                                )),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                    Padding(
+                      padding: GlobalVariables.normPadding,
+                      child: GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ProductDetailsPage(
+                              item: item,
+                              id: id,
                             ),
                           ),
                         ),
-                        GlobalVariables.spaceSmall()
-                      ],
-                    );
-                  },
-                ),
-              ));
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: Row(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(30),
+                                child: Hero(
+                                  tag: 'CatalogItem $id',
+                                  child: CachedNetworkImage(
+                                    key: UniqueKey(),
+                                    placeholder: (context, url) {
+                                      return Image.asset(
+                                          GlobalVariables.appIcon);
+                                    },
+                                    imageUrl: item['image'],
+                                    height: 90.h,
+                                    width: 90.w,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              GlobalVariables.spaceSmall(isWidth: true),
+                              Flexible(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      item['name'],
+                                      overflow: TextOverflow.ellipsis,
+                                      style: WriteStyles.bodySmall(context)
+                                          .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                      ),
+                                    ),
+                                    SizedBox(height: 5.h),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          ' \$${item['price'].toString()}',
+                                          style: WriteStyles.bodySmall(context)
+                                              .copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .tertiary,
+                                          ),
+                                        ),
+                                        IconButton(
+                                          onPressed: () {
+                                            servicesProvider.removeFromWishlist(
+                                              id: item['id'],
+                                            );
+                                          },
+                                          icon: const Icon(
+                                            CarbonIcons.star_filled,
+                                            size: 30,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    GlobalVariables.spaceSmall(),
+                  ],
+                );
+              },
+            ),
+    );
   }
 }
