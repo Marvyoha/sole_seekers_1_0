@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carbon_icons/carbon_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,6 +15,29 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final servicesProvider =
         Provider.of<ServicesProvider>(context, listen: true);
+    Widget profilePic() {
+      if (servicesProvider.userDetails!.profilePicture.isNotEmpty) {
+        return CachedNetworkImage(
+          key: UniqueKey(),
+          placeholder: (context, url) {
+            return Image.asset(
+              GlobalVariables.appIcon,
+              color: Theme.of(context).colorScheme.primary,
+            );
+          },
+          imageUrl: servicesProvider.userDetails!.profilePicture,
+          height: 80.h,
+          width: 80.w,
+          fit: BoxFit.cover,
+        );
+      }
+      return Icon(
+        CarbonIcons.person,
+        size: 50,
+        color: Theme.of(context).colorScheme.background,
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -30,14 +54,9 @@ class SettingsPage extends StatelessWidget {
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  radius: 50,
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  child: Icon(
-                    CarbonIcons.person,
-                    size: 50,
-                    color: Theme.of(context).colorScheme.background,
-                  ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(90),
+                  child: profilePic(),
                 ),
                 GlobalVariables.spaceSmall(isWidth: true),
                 Column(

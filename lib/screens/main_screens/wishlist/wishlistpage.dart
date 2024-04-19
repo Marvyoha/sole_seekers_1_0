@@ -31,7 +31,6 @@ class _WishListPageState extends State<WishListPage> {
     // servicesProvider.getCatalogs();
 
     List<Map>? wishlistArray = servicesProvider.getWishlist();
-    ;
 
     bool isWishlisted() {
       if (servicesProvider.userDetails!.wishlist.isEmpty) {

@@ -31,6 +31,29 @@ class _HomePageState extends State<HomePage> {
 
     final qp = Provider.of<QueryProvider>(context, listen: true);
 
+    Widget profilePic() {
+      if (servicesProvider.userDetails!.profilePicture.isNotEmpty) {
+        return CachedNetworkImage(
+          key: UniqueKey(),
+          placeholder: (context, url) {
+            return Image.asset(
+              GlobalVariables.appIcon,
+              color: Theme.of(context).colorScheme.primary,
+            );
+          },
+          imageUrl: servicesProvider.userDetails!.profilePicture,
+          height: 45.h,
+          width: 45.w,
+          fit: BoxFit.cover,
+        );
+      }
+      return Icon(
+        CarbonIcons.user_profile,
+        size: 30,
+        color: Theme.of(context).colorScheme.background,
+      );
+    }
+
     return Scaffold(
       body: Container(
         height: GlobalVariables.sizeHeight(context),
@@ -50,14 +73,11 @@ class _HomePageState extends State<HomePage> {
                           color: Theme.of(context).colorScheme.primary),
                     ),
                     IconButton(
-                      onPressed: () {},
-                      icon: CircleAvatar(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        child: Icon(
-                          CarbonIcons.person,
-                          size: 30,
-                          color: Theme.of(context).colorScheme.background,
-                        ),
+                      onPressed: () =>
+                          Navigator.pushNamed(context, 'profilePage'),
+                      icon: ClipRRect(
+                        borderRadius: BorderRadius.circular(90),
+                        child: profilePic(),
                       ),
                     )
                   ],

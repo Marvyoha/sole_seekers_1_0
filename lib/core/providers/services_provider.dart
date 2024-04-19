@@ -20,11 +20,13 @@ class ServicesProvider extends ChangeNotifier {
     // checkInternetConnection();
     getCurrentUserDoc();
     // locale.delete('catalogs');
-    loadCatalog();
+    loadData();
   }
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  File? _imageFile;
+  String? _imageUrl;
   String? docId;
   // final Connectivity _connectivity = Connectivity();
   List<QueryDocumentSnapshot>? _catalogs;
@@ -38,9 +40,10 @@ class ServicesProvider extends ChangeNotifier {
   FirebaseStorage? get storage => _storage;
   User? get user => _auth.currentUser;
   List<QueryDocumentSnapshot>? get catalogs => _catalogs;
-
   UserDetails? get userDetails => _userDetails;
   bool get loader => _loader;
+  File? get imageFile => _imageFile;
+  String? get imageUrl => _imageUrl;
 
   //Setters
 
@@ -50,6 +53,10 @@ class ServicesProvider extends ChangeNotifier {
 
   set loader(bool newLoader) {
     _loader = newLoader;
+  }
+
+  set imageFile(File? newImageFile) {
+    _imageFile = newImageFile;
   }
 
   set catalogs(List<QueryDocumentSnapshot>? newCatalogs) {
@@ -219,9 +226,22 @@ class ServicesProvider extends ChangeNotifier {
         // TO DELETE FROM FIREBASE FIRESTORE
         await firestore?.collection('users').doc(docId).delete();
 
+        // TO DELETE FROM FIREBASE STORAGE
+        final snap = storage?.refFromURL(userDetails!.profilePicture);
+        // Delete the image file
+        await snap?.delete();
+        final folderRef = snap?.parent;
+        // Check if the folder is empty
+        final folderList = await folderRef?.listAll();
+        if (folderList!.items.isEmpty) {
+          // If the folder is empty, delete the folder
+          await folderRef?.delete();
+        }
         // TO CLEAR LOCAL DATA
         userDetails = null;
         docId = '';
+
+        loader = false;
       }
     } on FirebaseAuthException catch (e) {
       debugPrint('Deletion Error: ${e.message}');
@@ -411,22 +431,8 @@ class ServicesProvider extends ChangeNotifier {
     }
   }
 
-  // Future<void> updateUserDetails() async {
-  //   try {
-  //     await user?.updateDisplayName(userDetails?.username);
-  //     await firestore?.collection('users').doc(docId).update({
-  //       'username': userDetails?.username.trim(),
-  //       'wishlist': userDetails?.wishlist,
-  //       'cart': userDetails?.cart,
-  //       'purchase_history': userDetails?.purchaseHistory,
-  //     });
-  //   } on FirebaseException catch (e) {
-  //     debugPrint('Updating user_info Error: [${e.code}]' ' ${e.message}');
-  //   }
-  // }
-
   // LOCAL STORAGE FUNCTIONS (HIVE)
-  loadCatalog() async {
+  loadData() async {
     //  var raw = locale.get('catalogs');
     if (locale.isEmpty) {
       await getCatalogs();
@@ -436,16 +442,34 @@ class ServicesProvider extends ChangeNotifier {
     return locale.get('catalogs');
   }
 
-  // FIREBASE STORAGE FUNCTIONS
-  Future<void> uploadImage(String path, XFile image) async {
-    try {
-      final ref = await storage?.ref(path).child(image.name);
-      await ref?.putFile(File(image.path));
-      final url = await ref?.getDownloadURL();
-      userDetails?.profilePicture = url!;
-      updateUserDetails();
-    } on FirebaseException catch (e) {
-      debugPrint('Uploading Image Error: [${e.code}]' ' ${e.message}');
+// IMAGE PICKER FUNCTION
+  Future<void> pickImage(ImageSource source) async {
+    final pickedFile = await ImagePicker().pickImage(source: source);
+    if (pickedFile != null) {
+      _imageFile = File(pickedFile.path);
+      notifyListeners();
     }
+  }
+
+  // FIREBASE STORAGE FUNCTIONS
+  Future<void> uploadImage() async {
+    if (_imageFile == null) return;
+
+    if (userDetails!.profilePicture.isNotEmpty) {
+      final snap = storage?.refFromURL(userDetails!.profilePicture);
+      await snap?.delete();
+      userDetails?.profilePicture = '';
+    }
+
+    final ref = storage?.ref().child(
+        'profilePictures/${user?.email}/${DateTime.now().millisecondsSinceEpoch}.jpg');
+    await ref?.putFile(_imageFile!);
+    _imageUrl = await ref?.getDownloadURL();
+
+    userDetails?.profilePicture = _imageUrl!;
+    updateUserDetails();
+    _imageFile = null;
+
+    notifyListeners();
   }
 }

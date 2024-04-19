@@ -1,13 +1,14 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carbon_icons/carbon_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:sole_seekers_1_0/screens/main_screens/settings_page/widgets/delete_account_dialog.dart';
 import 'package:sole_seekers_1_0/screens/main_screens/settings_page/widgets/edit_username_dialog.dart';
-import 'package:sole_seekers_1_0/screens/main_screens/settings_page/widgets/image_picker_dialog.dart';
 
 import '../../../constant/font_styles.dart';
 import '../../../constant/global_variables.dart';
@@ -25,74 +26,36 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     final servicesProvider =
         Provider.of<ServicesProvider>(context, listen: true);
-    File? selectedImage;
+    bool isUpload = servicesProvider.imageFile == null ? false : true;
 
-    Future pickImageFromGallery() async {
-      final returnedImage =
-          await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (returnedImage == null) return;
-
-      setState(() {
-        selectedImage = File(returnedImage.path);
-      });
-    }
-
-    imagePickerDialog() {
-      return showModalBottomSheet(
-        context: context,
-        builder: (context) {
-          return Container(
-            height: selectedImage != null ? 400.h : 250.h,
-            width: GlobalVariables.sizeWidth(context),
-            decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.background,
-                borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30))),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                GlobalVariables.spaceMedium(),
-                selectedImage != null
-                    ? CircleAvatar(
-                        radius: 50,
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        child: Image.file(selectedImage!))
-                    : Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 9.0),
-                        child: Text(
-                          'Select an image from any source',
-                          style: WriteStyles.headerMedium(context),
-                        ),
-                      ),
-                GlobalVariables.spaceMedium(),
-                ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(
-                            Theme.of(context).colorScheme.primary)),
-                    child: Text(
-                      'Upload from Camera',
-                      style: WriteStyles.bodySmall(context).copyWith(
-                          height: 5,
-                          color: Theme.of(context).colorScheme.background),
-                    )),
-                GlobalVariables.spaceSmall(),
-                ElevatedButton(
-                    onPressed: () => pickImageFromGallery(),
-                    style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(
-                            Theme.of(context).colorScheme.primary)),
-                    child: Text(
-                      'Upload from Gallery',
-                      style: WriteStyles.bodySmall(context).copyWith(
-                          height: 5,
-                          color: Theme.of(context).colorScheme.background),
-                    ))
-              ],
-            ),
-          );
-        },
+    Widget profilePic() {
+      if (servicesProvider.userDetails!.profilePicture.isNotEmpty &&
+          servicesProvider.imageFile == null) {
+        return CachedNetworkImage(
+          key: UniqueKey(),
+          placeholder: (context, url) {
+            return Image.asset(
+              GlobalVariables.appIcon,
+              color: Theme.of(context).colorScheme.primary,
+            );
+          },
+          imageUrl: servicesProvider.userDetails!.profilePicture,
+          height: 150.h,
+          width: 150.w,
+          fit: BoxFit.cover,
+        );
+      } else if (servicesProvider.imageFile != null) {
+        return Image.file(
+          height: 150.h,
+          width: 150.w,
+          servicesProvider.imageFile!,
+          fit: BoxFit.cover,
+        );
+      }
+      return Icon(
+        CarbonIcons.person,
+        size: 50,
+        color: Theme.of(context).colorScheme.background,
       );
     }
 
@@ -105,14 +68,9 @@ class _ProfilePageState extends State<ProfilePage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                child: Icon(
-                  CarbonIcons.person,
-                  size: 50,
-                  color: Theme.of(context).colorScheme.background,
-                ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(90),
+                child: profilePic(),
               ),
               GlobalVariables.spaceSmall(),
               Text(
@@ -123,14 +81,98 @@ class _ProfilePageState extends State<ProfilePage> {
                 servicesProvider.userDetails?.email as String,
                 style: WriteStyles.headerSmall(context),
               ),
-              GlobalVariables.spaceMedium(),
-              ProfileTile(
-                  icon: CarbonIcons.user_avatar,
-                  onTap: () {
-                    imagePickerDialog();
-                  },
-                  text: 'Edit Profile Picture'),
               GlobalVariables.spaceSmall(),
+              TextButton(
+                  onPressed: () =>
+                      servicesProvider.pickImage(ImageSource.camera),
+                  child: Container(
+                    width: 190.w,
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(CarbonIcons.camera),
+                        SizedBox(width: 5.w),
+                        Text(
+                          'Upload from Camera',
+                          style: WriteStyles.bodySmall(context).copyWith(
+                              height: 3,
+                              color: Theme.of(context).colorScheme.primary),
+                        ),
+                      ],
+                    ),
+                  )),
+              TextButton(
+                  onPressed: () =>
+                      servicesProvider.pickImage(ImageSource.gallery),
+                  child: Container(
+                    width: 190.w,
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(CarbonIcons.image),
+                        SizedBox(width: 5.w),
+                        Text(
+                          'Upload from Gallery',
+                          style: WriteStyles.bodySmall(context).copyWith(
+                              height: 3,
+                              color: Theme.of(context).colorScheme.primary),
+                        ),
+                      ],
+                    ),
+                  )),
+              isUpload
+                  ? TextButton(
+                      onPressed: () => servicesProvider.uploadImage(),
+                      child: Container(
+                        width: 190.w,
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        color: Theme.of(context).colorScheme.primary,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              CarbonIcons.cloud,
+                              color: Theme.of(context).colorScheme.background,
+                            ),
+                            SizedBox(width: 5.w),
+                            Text(
+                              'Update Profile Picture',
+                              style: WriteStyles.bodySmall(context).copyWith(
+                                  height: 3,
+                                  color:
+                                      Theme.of(context).colorScheme.background),
+                            ),
+                          ],
+                        ),
+                      ))
+                  : const SizedBox(),
+              isUpload == true
+                  ? TextButton(
+                      onPressed: () {
+                        servicesProvider.imageFile = null;
+                        setState(() {});
+                      },
+                      child: Container(
+                        width: 190.w,
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(CarbonIcons.image),
+                            SizedBox(width: 5.w),
+                            Text(
+                              'Cancel',
+                              style: WriteStyles.bodySmall(context).copyWith(
+                                  height: 3,
+                                  color: Theme.of(context).colorScheme.primary),
+                            ),
+                          ],
+                        ),
+                      ))
+                  : const SizedBox(),
+              GlobalVariables.spaceMedium(),
               ProfileTile(
                   icon: CarbonIcons.user_data,
                   onTap: () {
