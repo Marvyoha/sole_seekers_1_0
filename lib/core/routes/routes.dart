@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../../constant/widgets/about_app.dart';
+import '../../constant/widgets/privacyPolicy.dart';
+import '../../constant/widgets/termsAndConditions.dart';
 import '../../screens/auth_screens/auth_checker.dart';
 import '../../screens/auth_screens/forgot_password.dart';
 import '../../screens/auth_screens/login.dart';
 import '../../screens/auth_screens/signup.dart';
 import '../../screens/main_screens/homepage/homepage.dart';
+import '../../screens/main_screens/settings_page/profile.dart';
 import '../../screens/misc_screens/main_navigation.dart';
 import '../../screens/main_screens/homepage/widgets/searchpage.dart';
 import '../../screens/misc_screens/on_boarding.dart';
@@ -28,6 +32,14 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const SearchPage());
       case 'mainNav':
         return MaterialPageRoute(builder: (_) => const MainNav());
+      case 'profilePage':
+        return MaterialPageRoute(builder: (_) => const ProfilePage());
+      case 'privacyPolicy':
+        return MaterialPageRoute(builder: (_) => const PrivacyPolicy());
+      case 'termsAndConditions':
+        return MaterialPageRoute(builder: (_) => const TermsAndConditions());
+      case 'aboutApp':
+        return MaterialPageRoute(builder: (_) => const AboutApp());
       default:
         return _errorRoute();
     }

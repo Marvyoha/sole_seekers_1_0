@@ -157,7 +157,7 @@ class _MainNavState extends State<MainNav> {
                 : Theme.of(context).colorScheme.background,
           ),
           Icon(
-            CarbonIcons.settings,
+            Icons.more_horiz,
             size: 30,
             color: currentIndex == 3
                 ? Theme.of(context).colorScheme.primary

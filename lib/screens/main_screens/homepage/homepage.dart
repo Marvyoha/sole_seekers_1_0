@@ -27,8 +27,8 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final servicesProvider =
-        Provider.of<ServicesProvider>(context, listen: false);
-    servicesProvider.getCurrentUserDoc();
+        Provider.of<ServicesProvider>(context, listen: true);
+
     final qp = Provider.of<QueryProvider>(context, listen: true);
 
     return Scaffold(
@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Welcome ${servicesProvider.user?.displayName}',
+                      'Welcome ${servicesProvider.user?.displayName ?? 'Pleibian'}',
                       style: WriteStyles.headerMedium(context).copyWith(
                           color: Theme.of(context).colorScheme.primary),
                     ),
@@ -155,7 +155,11 @@ class _HomePageState extends State<HomePage> {
                                             key: UniqueKey(),
                                             placeholder: (context, url) {
                                               return Image.asset(
-                                                  GlobalVariables.appIcon);
+                                                GlobalVariables.appIcon,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                              );
                                             },
                                             imageUrl: item['image'],
                                             height: 150.h,

@@ -129,6 +129,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                 ? CarbonIcons.star_filled
                                 : CarbonIcons.star,
                             size: 40,
+                            color: Theme.of(context).colorScheme.surface,
                           )),
                     )
                   ],
@@ -139,7 +140,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   style: WriteStyles.headerMedium(context),
                 ),
                 Text(
-                  widget.item['brand'],
+                  widget.item['brand'].toString().toUpperCase(),
                   style: WriteStyles.headerSmall(context).copyWith(
                       fontSize: 15.sp,
                       color: Theme.of(context).colorScheme.secondary),

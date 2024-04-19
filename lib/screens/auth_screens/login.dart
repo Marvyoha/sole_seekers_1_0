@@ -8,7 +8,6 @@ import '../../constant/global_variables.dart';
 import '../../constant/widgets/custom_button.dart';
 import '../../constant/widgets/custom_textfield.dart';
 import '../../core/providers/services_provider.dart';
-import '../../constant/widgets/privacy_policy_dialog.dart';
 
 class Login extends StatelessWidget {
   const Login({super.key});
@@ -25,6 +24,7 @@ class Login extends StatelessWidget {
       // Call signIn function from ServicesProvider
       servicesProvider.signIn(
           emailController.text, passwordController.text, context);
+      servicesProvider.getCurrentUserDoc();
     }
 
     return Scaffold(
@@ -93,7 +93,7 @@ class Login extends StatelessWidget {
                 ),
                 GlobalVariables.spaceMedium(),
                 GestureDetector(
-                  onTap: () => privacyPolicy(context),
+                  onTap: () => Navigator.pushNamed(context, 'privacyPolicy'),
                   child: Center(
                     child: Text.rich(TextSpan(children: [
                       TextSpan(

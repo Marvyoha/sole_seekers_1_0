@@ -165,7 +165,11 @@ class _SearchPageState extends State<SearchPage> {
                                 height: 50.h,
                                 width: 50.w,
                                 placeholder: (context, url) {
-                                  return Image.asset(GlobalVariables.appIcon);
+                                  return Image.asset(
+                                    GlobalVariables.appIcon,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  );
                                 },
                                 imageUrl: items['image'],
                                 fit: BoxFit.fill,

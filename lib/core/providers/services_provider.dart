@@ -1,8 +1,13 @@
 // ignore_for_file: use_build_context_synchronously, unnecessary_getters_setters
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../models/user_info.dart';
 
@@ -18,7 +23,7 @@ class ServicesProvider extends ChangeNotifier {
     loadCatalog();
   }
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
+  final FirebaseStorage _storage = FirebaseStorage.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String? docId;
   // final Connectivity _connectivity = Connectivity();
@@ -30,6 +35,7 @@ class ServicesProvider extends ChangeNotifier {
   // Connectivity? get connectionStatus => _connectionStatus;
   FirebaseFirestore? get firestore => _firestore;
   FirebaseAuth? get auth => _auth;
+  FirebaseStorage? get storage => _storage;
   User? get user => _auth.currentUser;
   List<QueryDocumentSnapshot>? get catalogs => _catalogs;
 
@@ -248,6 +254,7 @@ class ServicesProvider extends ChangeNotifier {
     try {
       await user?.updateDisplayName(username);
       await firestore?.collection('users').add({
+        'profilePicture': '',
         'uid': user?.uid,
         'email': email.trim(),
         'username': username.trim(),
@@ -287,6 +294,7 @@ class ServicesProvider extends ChangeNotifier {
         await user?.updateDisplayName(username);
         userDetails?.username = username!.trim();
         updateUserDetails();
+        notifyListeners();
       }
     } on FirebaseException catch (e) {
       debugPrint('Database Error: [${e.code}]' ' ${e.message}');
@@ -330,7 +338,7 @@ class ServicesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  getCart() {
+  List<Map> getCart() {
     List<Map> cart = [];
     try {
       for (Cart item in userDetails!.cart) {
@@ -366,9 +374,14 @@ class ServicesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeFromCart({required Cart cartDetails}) {
+  void removeFromCart({required int id}) {
     try {
-      userDetails?.cart.remove(cartDetails);
+      for (var item in userDetails!.cart) {
+        if (item.id == id) {
+          userDetails?.cart.remove(item);
+          break;
+        }
+      }
       updateUserDetails();
     } on FirebaseException catch (e) {
       debugPrint('Database Error: [${e.code}]' ' ${e.message}');
@@ -421,5 +434,18 @@ class ServicesProvider extends ChangeNotifier {
     }
     catalogs = locale.get('catalogs');
     return locale.get('catalogs');
+  }
+
+  // FIREBASE STORAGE FUNCTIONS
+  Future<void> uploadImage(String path, XFile image) async {
+    try {
+      final ref = await storage?.ref(path).child(image.name);
+      await ref?.putFile(File(image.path));
+      final url = await ref?.getDownloadURL();
+      userDetails?.profilePicture = url!;
+      updateUserDetails();
+    } on FirebaseException catch (e) {
+      debugPrint('Uploading Image Error: [${e.code}]' ' ${e.message}');
+    }
   }
 }

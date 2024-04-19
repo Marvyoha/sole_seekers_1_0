@@ -5,27 +5,25 @@ import '../../../../constant/widgets/custom_button.dart';
 import '../../../../constant/widgets/custom_textfield.dart';
 import '../../../../core/providers/services_provider.dart';
 
-deleteAccountDialog(BuildContext context, ServicesProvider provider) {
-  TextEditingController passwordController = TextEditingController();
+editUsernameDialog(BuildContext context, ServicesProvider provider) {
+  TextEditingController usernameController = TextEditingController();
   return showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           backgroundColor: Theme.of(context).colorScheme.background,
-          title: Text("Are you sure want to delete your account?",
+          title: Text("Enter a New User name",
               style: WriteStyles.headerMedium(context)
                   .copyWith(color: Theme.of(context).colorScheme.primary)),
-          content: CustomTextField(
-              obscureText: true,
-              hintText: 'Enter Password',
-              controller: passwordController),
+          content:
+              CustomTextField(hintText: '', controller: usernameController),
           actions: [
             CustomButton(
-                text: 'Delete Account',
+                text: 'Change User name',
                 isLoading: provider.loader,
                 onTap: () {
-                  provider.deleteUser(context, passwordController.text);
-                  Navigator.pushNamed(context, 'onBoarding');
+                  provider.updateUserName(username: usernameController.text);
+                  Navigator.pop(context);
                 }),
             TextButton(
                 onPressed: () => Navigator.pop(context),

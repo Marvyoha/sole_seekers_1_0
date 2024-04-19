@@ -1,5 +1,6 @@
 class UserDetails {
   String uid;
+  String profilePicture;
   String email;
   String username;
   List<int> wishlist;
@@ -8,6 +9,7 @@ class UserDetails {
 
   UserDetails({
     required this.uid,
+    required this.profilePicture,
     required this.email,
     required this.username,
     required this.wishlist,
@@ -17,6 +19,7 @@ class UserDetails {
 
   UserDetails.fromJson(Map<String, dynamic> json)
       : uid = json['uid'],
+        profilePicture = json['profilePicture'],
         email = json['email'],
         username = json['username'],
         wishlist = List<int>.from(json['wishlist']),
@@ -31,6 +34,7 @@ class UserDetails {
   Map<String, dynamic> toJson() {
     return {
       'uid': uid,
+      'profilePicture': profilePicture,
       'email': email,
       'username': username,
       'wishlist': wishlist,

@@ -63,7 +63,7 @@ class _OnBoardingState extends State<OnBoarding> {
         ),
       ),
       bottomSheet: Container(
-        color: const Color(0xffF7FAF7),
+        color: Theme.of(context).colorScheme.background,
         padding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
