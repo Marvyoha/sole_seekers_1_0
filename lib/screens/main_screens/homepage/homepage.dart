@@ -1,15 +1,14 @@
 import 'package:carbon_icons/carbon_icons.dart';
 import 'package:firebase_ui_firestore/firebase_ui_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../constant/font_styles.dart';
 import '../../../constant/global_variables.dart';
-import '../../../core/models/user_info.dart';
+
 import '../../../core/providers/query_provider.dart';
 import '../../../core/providers/services_provider.dart';
 import '../../misc_screens/product_details_page.dart';
@@ -24,6 +23,21 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  // bool isLoading = true;
+  // Future loadData() async {
+  //   ServicesProvider();
+  // }
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   loadData().then((_) {
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //   });
+  // }
+
   @override
   Widget build(BuildContext context) {
     final servicesProvider =
@@ -47,11 +61,22 @@ class _HomePageState extends State<HomePage> {
           fit: BoxFit.cover,
         );
       }
-      return Icon(
-        CarbonIcons.user_profile,
-        size: 30,
-        color: Theme.of(context).colorScheme.background,
+      return CircleAvatar(
+        child: Icon(
+          CarbonIcons.user_avatar_filled,
+          size: 30,
+          color: Theme.of(context).colorScheme.background,
+        ),
       );
+    }
+
+    Future loadEssentials() async {
+      try {
+        await servicesProvider.getCurrentUserDoc();
+        return 1;
+      } catch (e) {
+        return 0;
+      }
     }
 
     return Scaffold(
@@ -77,7 +102,37 @@ class _HomePageState extends State<HomePage> {
                           Navigator.pushNamed(context, 'profilePage'),
                       icon: ClipRRect(
                         borderRadius: BorderRadius.circular(90),
-                        child: profilePic(),
+                        child: FutureBuilder(
+                          future: loadEssentials(),
+                          builder:
+                              (BuildContext context, AsyncSnapshot snapshot) {
+                            if (snapshot.hasData) {
+                              return CachedNetworkImage(
+                                key: UniqueKey(),
+                                placeholder: (context, url) {
+                                  return Image.asset(
+                                    GlobalVariables.appIcon,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  );
+                                },
+                                imageUrl: servicesProvider
+                                    .userDetails!.profilePicture,
+                                height: 45.h,
+                                width: 45.w,
+                                fit: BoxFit.cover,
+                              );
+                            }
+                            return CircleAvatar(
+                              radius: 24.6,
+                              child: Icon(
+                                CarbonIcons.user_avatar_filled,
+                                size: 30,
+                                color: Theme.of(context).colorScheme.background,
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     )
                   ],

@@ -187,7 +187,7 @@ class _CartPageState extends State<CartPage> {
                                                 icon: const Icon(
                                                     CarbonIcons.subtract_alt),
                                               ),
-                                              Text('${quantity}',
+                                              Text('$quantity',
                                                   style:
                                                       WriteStyles.headerSmall(
                                                           context)),

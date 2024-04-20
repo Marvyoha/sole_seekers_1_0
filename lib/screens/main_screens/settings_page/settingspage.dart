@@ -31,10 +31,13 @@ class SettingsPage extends StatelessWidget {
           fit: BoxFit.cover,
         );
       }
-      return Icon(
-        CarbonIcons.person,
-        size: 50,
-        color: Theme.of(context).colorScheme.background,
+      return CircleAvatar(
+        radius: 40,
+        child: Icon(
+          CarbonIcons.user_avatar_filled,
+          size: 50,
+          color: Theme.of(context).colorScheme.background,
+        ),
       );
     }
 

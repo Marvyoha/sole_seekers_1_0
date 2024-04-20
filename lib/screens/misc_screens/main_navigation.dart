@@ -10,7 +10,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 import '../../constant/font_styles.dart';
-import '../../constant/global_variables.dart';
 import '../main_screens/cartpage/cartpage.dart';
 import '../main_screens/homepage/homepage.dart';
 import '../main_screens/settings_page/settingspage.dart';
@@ -36,9 +35,11 @@ class _MainNavState extends State<MainNav> {
   late StreamSubscription subscription;
   bool isDeviceConnected = false;
   bool isDialogSet = false;
+
   @override
   void initState() {
     getConnectivity();
+
     super.initState();
   }
 

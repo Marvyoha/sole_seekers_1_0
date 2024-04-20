@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:sole_seekers_1_0/constant/font_styles.dart';
 import 'package:sole_seekers_1_0/constant/global_variables.dart';

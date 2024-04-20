@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carbon_icons/carbon_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -52,10 +49,13 @@ class _ProfilePageState extends State<ProfilePage> {
           fit: BoxFit.cover,
         );
       }
-      return Icon(
-        CarbonIcons.person,
-        size: 50,
-        color: Theme.of(context).colorScheme.background,
+      return CircleAvatar(
+        radius: 80,
+        child: Icon(
+          CarbonIcons.user_avatar_filled,
+          size: 100,
+          color: Theme.of(context).colorScheme.background,
+        ),
       );
     }
 

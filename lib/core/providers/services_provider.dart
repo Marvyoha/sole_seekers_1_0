@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -216,6 +215,7 @@ class ServicesProvider extends ChangeNotifier {
     try {
       if (user != null) {
         // TO DELETE FROM FIREBASE AUTH
+        // ignore: await_only_futures
         var credential = await EmailAuthProvider.credential(
           email: user!.email!,
           password: password,
@@ -296,7 +296,6 @@ class ServicesProvider extends ChangeNotifier {
             docId = element.id;
             Map<String, dynamic> rawData = element.data();
             userDetails = UserDetails.fromJson(rawData);
-
             break;
           }
         }
@@ -322,6 +321,7 @@ class ServicesProvider extends ChangeNotifier {
   }
 
   List<Map> getWishlist() {
+    getCurrentUserDoc();
     List<Map> wishlist = [];
     try {
       for (int id in userDetails!.wishlist) {

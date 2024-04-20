@@ -2,16 +2,12 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carbon_icons/carbon_icons.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:sole_seekers_1_0/constant/font_styles.dart';
-import 'package:sole_seekers_1_0/constant/global_variables.dart';
-import 'package:sole_seekers_1_0/constant/widgets/custom_button.dart';
 
-import '../../core/models/shoes_model.dart';
+import '../../constant/global_variables.dart';
 import '../../core/models/user_info.dart';
 import '../../core/providers/services_provider.dart';
 

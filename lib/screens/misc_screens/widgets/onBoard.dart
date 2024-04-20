@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -16,7 +18,7 @@ class OnBoard extends StatelessWidget {
       padding: GlobalVariables.normPadding,
       child: Column(
         children: [
-          Container(
+          SizedBox(
             height: 200.h,
             width: 240.w,
             child: Image.asset(GlobalVariables.logo,
@@ -27,7 +29,7 @@ class OnBoard extends StatelessWidget {
             textAlign: TextAlign.start,
             style: WriteStyles.headerLarge(context).copyWith(fontSize: 29.sp),
           ),
-          Container(
+          SizedBox(
               height: 280.h,
               width: 320.w,
               child: Image.asset(

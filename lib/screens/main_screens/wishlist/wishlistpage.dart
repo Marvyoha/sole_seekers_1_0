@@ -1,17 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carbon_icons/carbon_icons.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_ui_firestore/firebase_ui_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 import '../../../constant/font_styles.dart';
 import '../../../constant/global_variables.dart';
-import '../../../core/models/shoes_model.dart';
-import '../../../core/providers/query_provider.dart';
+
 import '../../../core/providers/services_provider.dart';
 import '../../misc_screens/product_details_page.dart';
 
@@ -71,9 +66,9 @@ class _WishListPageState extends State<WishListPage> {
                 ),
               )
             : ListView.builder(
-                itemCount: wishlistArray!.length,
+                itemCount: wishlistArray.length,
                 itemBuilder: (BuildContext context, int index) {
-                  final item = wishlistArray![index];
+                  final item = wishlistArray[index];
                   final id = item['id'];
                   return Column(
                     children: [
