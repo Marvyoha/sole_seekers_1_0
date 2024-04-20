@@ -79,6 +79,43 @@ class _HomePageState extends State<HomePage> {
       }
     }
 
+    // FutureBuilder(
+    //                         future: loadEssentials(),
+    //                         builder:
+    //                             (BuildContext context, AsyncSnapshot snapshot) {
+    //                           if (snapshot.hasData) {
+    //                             if (servicesProvider
+    //                                 .userDetails!.profilePicture.isNotEmpty) {
+    //                               return CachedNetworkImage(
+    //                                 key: UniqueKey(),
+    //                                 placeholder: (context, url) {
+    //                                   return Image.asset(
+    //                                     GlobalVariables.appIcon,
+    //                                     color: Theme.of(context)
+    //                                         .colorScheme
+    //                                         .primary,
+    //                                   );
+    //                                 },
+    //                                 imageUrl: servicesProvider
+    //                                     .userDetails!.profilePicture,
+    //                                 height: 45.h,
+    //                                 width: 45.w,
+    //                                 fit: BoxFit.cover,
+    //                               );
+    //                             }
+    //                           }
+    //                           return CircleAvatar(
+    //                             // radius: 24.6,
+    //                             child: Icon(
+    //                               CarbonIcons.user_avatar_filled,
+    //                               size: 30,
+    //                               color:
+    //                                   Theme.of(context).colorScheme.background,
+    //                             ),
+    //                           );
+    //                         },
+    //                       ),
+
     return Scaffold(
       body: Container(
         height: GlobalVariables.sizeHeight(context),
@@ -102,37 +139,8 @@ class _HomePageState extends State<HomePage> {
                           Navigator.pushNamed(context, 'profilePage'),
                       icon: ClipRRect(
                         borderRadius: BorderRadius.circular(90),
-                        child: FutureBuilder(
-                          future: loadEssentials(),
-                          builder:
-                              (BuildContext context, AsyncSnapshot snapshot) {
-                            if (snapshot.hasData) {
-                              return CachedNetworkImage(
-                                key: UniqueKey(),
-                                placeholder: (context, url) {
-                                  return Image.asset(
-                                    GlobalVariables.appIcon,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  );
-                                },
-                                imageUrl: servicesProvider
-                                    .userDetails!.profilePicture,
-                                height: 45.h,
-                                width: 45.w,
-                                fit: BoxFit.cover,
-                              );
-                            }
-                            return CircleAvatar(
-                              radius: 24.6,
-                              child: Icon(
-                                CarbonIcons.user_avatar_filled,
-                                size: 30,
-                                color: Theme.of(context).colorScheme.background,
-                              ),
-                            );
-                          },
-                        ),
+                        child: SizedBox(
+                            height: 45.h, width: 45.w, child: profilePic()),
                       ),
                     )
                   ],

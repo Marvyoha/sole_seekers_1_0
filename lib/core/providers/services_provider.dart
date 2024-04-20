@@ -210,8 +210,8 @@ class ServicesProvider extends ChangeNotifier {
   }
 
   Future<void> deleteUser(BuildContext context, String password) async {
-    loader = true;
-    notifyListeners();
+    // loader = true;
+    // notifyListeners();
     try {
       if (user != null) {
         // TO DELETE FROM FIREBASE AUTH
@@ -239,9 +239,11 @@ class ServicesProvider extends ChangeNotifier {
         }
         // TO CLEAR LOCAL DATA
         userDetails = null;
+        locale.delete('catalogs');
         docId = '';
 
-        loader = false;
+        // loader = false;
+        // notifyListeners();
       }
     } on FirebaseAuthException catch (e) {
       debugPrint('Deletion Error: ${e.message}');
@@ -257,8 +259,8 @@ class ServicesProvider extends ChangeNotifier {
         ),
       );
     }
-    loader = false;
-    notifyListeners();
+    // loader = false;
+    // notifyListeners();
   }
 
 // FIREBASE CLOUD FIRESTORE DATABASE FUNTIONS
@@ -321,7 +323,6 @@ class ServicesProvider extends ChangeNotifier {
   }
 
   List<Map> getWishlist() {
-    getCurrentUserDoc();
     List<Map> wishlist = [];
     try {
       for (int id in userDetails!.wishlist) {

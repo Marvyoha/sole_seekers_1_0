@@ -18,7 +18,8 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
+  // await ServicesProvider().getCurrentUserDoc();
+  // await ServicesProvider().loadData();
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => ServicesProvider()),
