@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -159,6 +160,23 @@ class ServicesProvider extends ChangeNotifier {
     }
     loader = false;
     notifyListeners();
+  }
+
+  Future googleSignIn() async {
+    notifyListeners();
+    try {
+      // Begin interactive sign in process
+      final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
+      // Obtain auth details from request
+      final GoogleSignInAuthentication? gAuth = await gUser?.authentication;
+      // Create a new credential for user
+      final credential = GoogleAuthProvider.credential(
+          accessToken: gAuth?.accessToken, idToken: gAuth?.idToken);
+
+      return await auth?.signInWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      debugPrint('Authentication Error: [${e.code}]' ' ${e.message}');
+    }
   }
 
   Future<void> resetPassword(String email, BuildContext context) async {

@@ -112,7 +112,7 @@ class Login extends StatelessWidget {
                 // TODO set up google authentication and change icon.
                 Center(
                     child: IconButton(
-                        onPressed: () {},
+                        onPressed: () => servicesProvider.googleSignIn(),
                         icon: Icon(
                           CarbonIcons.logo_google,
                           size: 30.sp,

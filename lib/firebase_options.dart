@@ -65,6 +65,8 @@ class DefaultFirebaseOptions {
     projectId: 'soleseekers-b07f2',
     databaseURL: 'https://soleseekers-b07f2-default-rtdb.europe-west1.firebasedatabase.app',
     storageBucket: 'soleseekers-b07f2.appspot.com',
+    androidClientId: '100661327282-r3v1vvb9fqk5mf860t37345oujpd5cl7.apps.googleusercontent.com',
+    iosClientId: '100661327282-akekm7el3laahrod4s0vu0d349e3b704.apps.googleusercontent.com',
     iosBundleId: 'com.example.soleSeekers10',
   );
 }

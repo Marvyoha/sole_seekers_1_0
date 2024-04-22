@@ -13,7 +13,12 @@
           "package_name": "com.example.sole_seekers"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "100661327282-4co1fso8uf4q5klcp6go1qnap2d429gd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDgYWu-atppDLvL3g24IpEqlYeNX7YLXGM"
@@ -21,7 +26,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "100661327282-4co1fso8uf4q5klcp6go1qnap2d429gd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "100661327282-akekm7el3laahrod4s0vu0d349e3b704.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.soleSeekers10"
+              }
+            }
+          ]
         }
       }
     },
@@ -32,7 +49,20 @@
           "package_name": "com.example.sole_seekers_1_0"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "100661327282-r3v1vvb9fqk5mf860t37345oujpd5cl7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sole_seekers_1_0",
+            "certificate_hash": "2e88eb0201ca0291589eceb4f03f97745a6b87f8"
+          }
+        },
+        {
+          "client_id": "100661327282-4co1fso8uf4q5klcp6go1qnap2d429gd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDgYWu-atppDLvL3g24IpEqlYeNX7YLXGM"
@@ -40,7 +70,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "100661327282-4co1fso8uf4q5klcp6go1qnap2d429gd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "100661327282-akekm7el3laahrod4s0vu0d349e3b704.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.soleSeekers10"
+              }
+            }
+          ]
         }
       }
     }
