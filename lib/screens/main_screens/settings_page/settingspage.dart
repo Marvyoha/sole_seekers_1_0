@@ -3,10 +3,12 @@ import 'package:carbon_icons/carbon_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:sole_seekers_1_0/constant/global_variables.dart';
 
 import '../../../constant/font_styles.dart';
 import '../../../core/providers/services_provider.dart';
+import '../../../core/providers/theme_provider.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -16,19 +18,22 @@ class SettingsPage extends StatelessWidget {
     final servicesProvider =
         Provider.of<ServicesProvider>(context, listen: true);
     Widget profilePic() {
-      if (servicesProvider.userDetails!.profilePicture.isNotEmpty) {
-        return CachedNetworkImage(
-          key: UniqueKey(),
-          placeholder: (context, url) {
-            return Image.asset(
-              GlobalVariables.appIcon,
-              color: Theme.of(context).colorScheme.primary,
-            );
-          },
-          imageUrl: servicesProvider.userDetails!.profilePicture,
-          height: 80.h,
-          width: 80.w,
-          fit: BoxFit.cover,
+      if (servicesProvider.user?.photoURL != null) {
+        return Skeletonizer(
+          enabled: servicesProvider.user!.photoURL!.isEmpty,
+          child: CachedNetworkImage(
+            key: UniqueKey(),
+            placeholder: (context, url) {
+              return Image.asset(
+                GlobalVariables.appIcon,
+                color: Theme.of(context).colorScheme.primary,
+              );
+            },
+            imageUrl: servicesProvider.user!.photoURL as String,
+            height: 80.h,
+            width: 80.w,
+            fit: BoxFit.cover,
+          ),
         );
       }
       return CircleAvatar(
@@ -46,7 +51,7 @@ class SettingsPage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         centerTitle: true,
         title: Text(
-          'More',
+          '',
           style: WriteStyles.headerMedium(context)
               .copyWith(color: Theme.of(context).colorScheme.primary),
         ),
@@ -70,7 +75,7 @@ class SettingsPage extends StatelessWidget {
                       style: WriteStyles.headerMedium(context),
                     ),
                     Text(
-                      servicesProvider.userDetails?.email as String,
+                      servicesProvider.user!.email as String,
                       style: WriteStyles.headerSmall(context),
                     )
                   ],
@@ -98,7 +103,10 @@ class SettingsPage extends StatelessWidget {
             ),
             MoreTile(
               icon: CarbonIcons.contrast,
-              onTap: () {},
+              onTap: () {
+                Provider.of<ThemeProvider>(context, listen: false)
+                    .toggleTheme(context);
+              },
               text: 'Change Theme',
             ),
             GlobalVariables.spaceSmall(),

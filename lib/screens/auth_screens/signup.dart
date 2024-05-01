@@ -113,7 +113,8 @@ class SignUp extends StatelessWidget {
                     GlobalVariables.spaceMedium(),
                     Center(
                         child: IconButton(
-                            onPressed: () => servicesProvider.googleSignIn(),
+                            onPressed: () =>
+                                servicesProvider.googleSignIn(context),
                             icon: Icon(
                               CarbonIcons.logo_google,
                               size: 30.sp,

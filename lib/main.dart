@@ -5,7 +5,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:sole_seekers_1_0/core/providers/query_provider.dart';
 
-import 'constant/color_palette.dart';
 import 'core/providers/services_provider.dart';
 import 'core/providers/theme_provider.dart';
 import 'core/routes/routes.dart';
@@ -18,8 +17,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  // await ServicesProvider().getCurrentUserDoc();
-  // await ServicesProvider().loadData();
+
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => ServicesProvider()),
@@ -35,6 +33,8 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ServicesProvider().getCurrentUserDoc();
+    ServicesProvider().loadData();
     return ScreenUtilInit(
       designSize: const Size(360, 800),
       builder: (context, child) => MaterialApp(
@@ -42,8 +42,8 @@ class MainApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         onGenerateRoute: RouteGenerator.generateRoute,
         initialRoute: 'authChecker',
-        theme: lightMode,
-        // theme: Provider.of<ThemeProvider>(context).themeMode,
+        // theme: lightMode,
+        theme: Provider.of<ThemeProvider>(context).themeMode,
       ),
     );
   }

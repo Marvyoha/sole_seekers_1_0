@@ -23,8 +23,8 @@ deleteAccountDialog(BuildContext context, ServicesProvider provider) {
             CustomButton(
                 text: 'Delete Account',
                 isLoading: provider.loader,
-                onTap: () {
-                  provider.deleteUser(context, passwordController.text);
+                onTap: () async {
+                  await provider.deleteUser(context, passwordController.text);
                   Navigator.pushNamed(context, 'onBoarding');
                 }),
             TextButton(

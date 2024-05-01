@@ -16,6 +16,14 @@ class UserDetails {
     required this.cart,
     required this.purchaseHistory,
   });
+  UserDetails.nullify()
+      : uid = '',
+        profilePicture = '',
+        email = '',
+        username = '',
+        wishlist = [],
+        cart = [],
+        purchaseHistory = [];
 
   UserDetails.fromJson(Map<String, dynamic> json)
       : uid = json['uid'],

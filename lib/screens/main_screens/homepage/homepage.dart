@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../constant/font_styles.dart';
 import '../../../constant/global_variables.dart';
@@ -44,40 +45,43 @@ class _HomePageState extends State<HomePage> {
         Provider.of<ServicesProvider>(context, listen: true);
 
     final qp = Provider.of<QueryProvider>(context, listen: true);
+    bool isProfile = servicesProvider.user?.photoURL?.isEmpty ?? true;
 
     Widget profilePic() {
-      if (servicesProvider.userDetails!.profilePicture.isNotEmpty) {
-        return CachedNetworkImage(
-          key: UniqueKey(),
-          placeholder: (context, url) {
-            return Image.asset(
-              GlobalVariables.appIcon,
-              color: Theme.of(context).colorScheme.primary,
-            );
-          },
-          imageUrl: servicesProvider.userDetails!.profilePicture,
-          height: 45.h,
-          width: 45.w,
-          fit: BoxFit.cover,
+      if (isProfile) {
+        return CircleAvatar(
+          child: Icon(
+            CarbonIcons.user_avatar_filled,
+            size: 30,
+            color: Theme.of(context).colorScheme.background,
+          ),
         );
       }
-      return CircleAvatar(
-        child: Icon(
-          CarbonIcons.user_avatar_filled,
-          size: 30,
-          color: Theme.of(context).colorScheme.background,
-        ),
-      );
+      return Skeletonizer(
+          enabled: isProfile,
+          child: CachedNetworkImage(
+            key: UniqueKey(),
+            placeholder: (context, url) {
+              return Image.asset(
+                GlobalVariables.appIcon,
+                color: Theme.of(context).colorScheme.primary,
+              );
+            },
+            imageUrl: servicesProvider.user?.photoURL as String,
+            height: 45.h,
+            width: 45.w,
+            fit: BoxFit.cover,
+          ));
     }
 
-    Future loadEssentials() async {
-      try {
-        await servicesProvider.getCurrentUserDoc();
-        return 1;
-      } catch (e) {
-        return 0;
-      }
-    }
+    // Future loadEssentials() async {
+    //   try {
+    //     await servicesProvider.getCurrentUserDoc();
+    //     return 1;
+    //   } catch (e) {
+    //     return 0;
+    //   }
+    // }
 
     // FutureBuilder(
     //                         future: loadEssentials(),

@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../constant/color_palette.dart';
 
+final Box locale = Hive.box('localStorage');
+
 class ThemeProvider extends ChangeNotifier {
+  ThemeProvider() {
+    loadTheme();
+  }
+
   ThemeData _themeMode = lightMode;
 
   ThemeData get themeMode => _themeMode;
@@ -13,12 +20,19 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   void toggleTheme(BuildContext context) {
-    if (_themeMode == lightMode) {
-      themeMode = darkMode;
-    } else {
-      themeMode = lightMode;
-    }
-    Navigator.pushNamed(context, 'authChecker');
+    _themeMode = _themeMode == lightMode ? darkMode : lightMode;
+    saveTheme();
+    notifyListeners();
+    Navigator.pushNamedAndRemoveUntil(context, 'mainApp', (route) => false);
+  }
+
+  loadTheme() async {
+    final savedTheme = locale.get('theme');
+    _themeMode = savedTheme ?? lightMode;
+  }
+
+  saveTheme() {
+    locale.put('theme', themeMode);
   }
 }
 

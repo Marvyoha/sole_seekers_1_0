@@ -1,5 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:carbon_icons/carbon_icons.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
@@ -9,35 +9,57 @@ import '../../constant/widgets/custom_button.dart';
 import '../../constant/widgets/custom_textfield.dart';
 import '../../core/providers/services_provider.dart';
 
-class Login extends StatelessWidget {
-  const Login({super.key});
+class GoogleSignup extends StatelessWidget {
+  const GoogleSignup({super.key});
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController emailController = TextEditingController();
-    TextEditingController passwordController = TextEditingController();
+    TextEditingController userNameController = TextEditingController();
 
-    var servicesProvider =
-        Provider.of<ServicesProvider>(context, listen: false);
+    var servicesProvider = Provider.of<ServicesProvider>(context);
 
-    Future<void> loginLogic() async {
-      // Call signIn function from ServicesProvider
-      servicesProvider.signIn(
-          emailController.text, passwordController.text, context);
-      servicesProvider.getCurrentUserDoc();
+    Future<void> googleSigninLogic() async {
+      try {
+        servicesProvider.loader = true;
+        servicesProvider.storeUserDetails(username: userNameController.text);
+        servicesProvider.loader = false;
+
+        servicesProvider.auth?.authStateChanges().listen((user) {
+          if (user != null) {
+            // Navigate to home
+            Navigator.pushReplacementNamed(
+              context,
+              'mainNav',
+            );
+          }
+        });
+      } on FirebaseAuthException catch (e) {
+        debugPrint('Google Auth Error: [${e.code}]' ' ${e.message}');
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.red,
+            content: Center(
+              child: Text(
+                e.message!,
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+        );
+      }
     }
 
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: GlobalVariables.normPadding,
-          child: SingleChildScrollView(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: GlobalVariables.normPadding,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // FOR CHANGING THEME
-
-                SizedBox(height: 25.h),
+                GlobalVariables.spaceSmall(),
                 Center(
                   child: Image.asset(
                     GlobalVariables.logo,
@@ -53,44 +75,20 @@ class Login extends StatelessWidget {
                 ),
                 GlobalVariables.spaceSmaller(),
                 Text(
-                  'Kindly Login to access the app',
+                  'Kindly enter a user name.',
                   style: WriteStyles.bodyMedium(context),
                   textAlign: TextAlign.start,
                 ),
                 GlobalVariables.spaceMedium(),
                 CustomTextField(
-                    obscureText: false,
-                    hintText: 'Email address',
-                    controller: emailController),
-                GlobalVariables.spaceMedium(),
-                CustomTextField(
-                    obscureText: true,
-                    hintText: 'Password',
-                    controller: passwordController),
-                GlobalVariables.spaceMedium(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, 'forgotPassword');
-                      },
-                      child: Text(
-                        'Forgot Password',
-                        textAlign: TextAlign.end,
-                        style: WriteStyles.hintText(context),
-                      ),
-                    ),
-                  ],
-                ),
-                GlobalVariables.spaceMedium(),
+                    hintText: 'User name', controller: userNameController),
+                SizedBox(height: 65.h),
                 CustomButton(
-                  text: 'Sign In',
-                  isLoading:
-                      Provider.of<ServicesProvider>(context, listen: true)
-                          .loader,
-                  onTap: loginLogic,
-                ),
+                    text: 'Confirm',
+                    onTap: googleSigninLogic,
+                    isLoading:
+                        Provider.of<ServicesProvider>(context, listen: true)
+                            .loader),
                 GlobalVariables.spaceMedium(),
                 GestureDetector(
                   onTap: () => Navigator.pushNamed(context, 'privacyPolicy'),
@@ -108,17 +106,9 @@ class Login extends StatelessWidget {
                     ])),
                   ),
                 ),
-                GlobalVariables.spaceMedium(),
-
-                Center(
-                    child: IconButton(
-                        onPressed: () => servicesProvider.googleSignIn(context),
-                        icon: Icon(
-                          CarbonIcons.logo_google,
-                          size: 30.sp,
-                        ))),
-                GlobalVariables.spaceSmall(),
-                Center(
+                SizedBox(height: 101.h),
+                Align(
+                  alignment: Alignment.bottomCenter,
                   child: GestureDetector(
                     onTap: () {
                       Navigator.pushNamed(context, 'signup');
@@ -135,7 +125,6 @@ class Login extends StatelessWidget {
                     ])),
                   ),
                 ),
-                GlobalVariables.spaceSmall(),
               ],
             ),
           ),

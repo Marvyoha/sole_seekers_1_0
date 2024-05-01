@@ -3,6 +3,7 @@ import 'package:carbon_icons/carbon_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../constant/font_styles.dart';
 import '../../../constant/global_variables.dart';
@@ -27,15 +28,15 @@ class _WishListPageState extends State<WishListPage> {
 
     List<Map>? wishlistArray = servicesProvider.getWishlist();
 
-    bool isWishlisted() {
-      if (servicesProvider.userDetails!.wishlist.isEmpty) {
-        return true;
-      } else {
-        return false;
-      }
-    }
+    // bool isWishlisted() {
+    //   if (servicesProvider.userDetails.wishlist.isEmpty) {
+    //     return true;
+    //   } else {
+    //     return false;
+    //   }
+    // }
 
-    bool isEmpty = isWishlisted();
+    bool isEmpty = servicesProvider.userDetails.wishlist.isEmpty;
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -65,110 +66,113 @@ class _WishListPageState extends State<WishListPage> {
                   ],
                 ),
               )
-            : ListView.builder(
-                itemCount: wishlistArray.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final item = wishlistArray[index];
-                  final id = item['id'];
-                  return Column(
-                    children: [
-                      Padding(
-                        padding: GlobalVariables.normPadding,
-                        child: GestureDetector(
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ProductDetailsPage(
-                                item: item,
-                                id: id,
+            : Skeletonizer(
+                enabled: isEmpty,
+                child: ListView.builder(
+                  itemCount: wishlistArray.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final item = wishlistArray[index];
+                    final id = item['id'];
+                    return Column(
+                      children: [
+                        Padding(
+                          padding: GlobalVariables.normPadding,
+                          child: GestureDetector(
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ProductDetailsPage(
+                                  item: item,
+                                  id: id,
+                                ),
+                              ),
+                            ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Row(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(30),
+                                    child: Hero(
+                                      tag: 'CatalogItem $id',
+                                      child: CachedNetworkImage(
+                                        key: UniqueKey(),
+                                        placeholder: (context, url) {
+                                          return Image.asset(
+                                            GlobalVariables.appIcon,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                          );
+                                        },
+                                        imageUrl: item['image'],
+                                        height: 90.h,
+                                        width: 90.w,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  GlobalVariables.spaceSmall(isWidth: true),
+                                  Flexible(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          item['name'],
+                                          overflow: TextOverflow.ellipsis,
+                                          style: WriteStyles.bodySmall(context)
+                                              .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                          ),
+                                        ),
+                                        SizedBox(height: 5.h),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              ' \$${item['price'].toString()}',
+                                              style:
+                                                  WriteStyles.bodySmall(context)
+                                                      .copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .tertiary,
+                                              ),
+                                            ),
+                                            IconButton(
+                                              onPressed: () {
+                                                servicesProvider
+                                                    .removeFromWishlist(
+                                                  id: item['id'],
+                                                );
+                                              },
+                                              icon: const Icon(
+                                                CarbonIcons.star_filled,
+                                                size: 30,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Row(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(30),
-                                  child: Hero(
-                                    tag: 'CatalogItem $id',
-                                    child: CachedNetworkImage(
-                                      key: UniqueKey(),
-                                      placeholder: (context, url) {
-                                        return Image.asset(
-                                          GlobalVariables.appIcon,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
-                                        );
-                                      },
-                                      imageUrl: item['image'],
-                                      height: 90.h,
-                                      width: 90.w,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                GlobalVariables.spaceSmall(isWidth: true),
-                                Flexible(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        item['name'],
-                                        overflow: TextOverflow.ellipsis,
-                                        style: WriteStyles.bodySmall(context)
-                                            .copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
-                                        ),
-                                      ),
-                                      SizedBox(height: 5.h),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            ' \$${item['price'].toString()}',
-                                            style:
-                                                WriteStyles.bodySmall(context)
-                                                    .copyWith(
-                                              fontWeight: FontWeight.bold,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .tertiary,
-                                            ),
-                                          ),
-                                          IconButton(
-                                            onPressed: () {
-                                              servicesProvider
-                                                  .removeFromWishlist(
-                                                id: item['id'],
-                                              );
-                                            },
-                                            icon: const Icon(
-                                              CarbonIcons.star_filled,
-                                              size: 30,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
                         ),
-                      ),
-                      GlobalVariables.spaceSmall(),
-                    ],
-                  );
-                },
+                        GlobalVariables.spaceSmall(),
+                      ],
+                    );
+                  },
+                ),
               ));
   }
 }

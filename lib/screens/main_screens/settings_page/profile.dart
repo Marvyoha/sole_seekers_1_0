@@ -2,14 +2,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carbon_icons/carbon_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:sole_seekers_1_0/screens/main_screens/settings_page/widgets/delete_account_dialog.dart';
-import 'package:sole_seekers_1_0/screens/main_screens/settings_page/widgets/edit_username_dialog.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../constant/font_styles.dart';
 import '../../../constant/global_variables.dart';
 import '../../../core/providers/services_provider.dart';
+import 'widgets/delete_account_dialog.dart';
+import 'widgets/edit_username_dialog.dart';
+import 'widgets/image_dialog.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -23,23 +24,27 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     final servicesProvider =
         Provider.of<ServicesProvider>(context, listen: true);
+    bool isGoogleAccount = servicesProvider.isUserSignedInWithGoogle();
     bool isUpload = servicesProvider.imageFile == null ? false : true;
 
     Widget profilePic() {
-      if (servicesProvider.userDetails!.profilePicture.isNotEmpty &&
+      if (servicesProvider.user?.photoURL != null &&
           servicesProvider.imageFile == null) {
-        return CachedNetworkImage(
-          key: UniqueKey(),
-          placeholder: (context, url) {
-            return Image.asset(
-              GlobalVariables.appIcon,
-              color: Theme.of(context).colorScheme.primary,
-            );
-          },
-          imageUrl: servicesProvider.userDetails!.profilePicture,
-          height: 150.h,
-          width: 150.w,
-          fit: BoxFit.cover,
+        return Skeletonizer(
+          enabled: servicesProvider.user!.photoURL!.isEmpty,
+          child: CachedNetworkImage(
+            key: UniqueKey(),
+            placeholder: (context, url) {
+              return Image.asset(
+                GlobalVariables.appIcon,
+                color: Theme.of(context).colorScheme.primary,
+              );
+            },
+            imageUrl: servicesProvider.user!.photoURL as String,
+            height: 150.h,
+            width: 150.w,
+            fit: BoxFit.cover,
+          ),
         );
       } else if (servicesProvider.imageFile != null) {
         return Image.file(
@@ -62,15 +67,82 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        actions: [
+          isUpload
+              ? TextButton(
+                  onPressed: () {
+                    servicesProvider.imageFile = null;
+                    setState(() {});
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                          color: Theme.of(context).colorScheme.primary),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      'Cancel',
+                      style: WriteStyles.bodySmall(context).copyWith(
+                          height: 3,
+                          color: Theme.of(context).colorScheme.primary),
+                    ),
+                  ))
+              : const SizedBox(),
+          isUpload
+              ? TextButton(
+                  onPressed: () async {
+                    await servicesProvider.uploadImage();
+                    setState(() {});
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          CarbonIcons.checkmark,
+                          color: Theme.of(context).colorScheme.background,
+                        ),
+                        SizedBox(width: 5.w),
+                        Text(
+                          'Save',
+                          style: WriteStyles.bodySmall(context).copyWith(
+                              height: 3,
+                              color: Theme.of(context).colorScheme.background),
+                        ),
+                      ],
+                    ),
+                  ))
+              : const SizedBox(),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30),
         child: SingleChildScrollView(
           child: Column(
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(90),
-                child: profilePic(),
+              GestureDetector(
+                onTap: () {
+                  imageDialog(context, servicesProvider);
+                },
+                child: Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(90),
+                      child: profilePic(),
+                    ),
+                    const Icon(
+                      Icons.camera_alt,
+                      size: 27,
+                    )
+                  ],
+                ),
               ),
               GlobalVariables.spaceSmall(),
               Text(
@@ -82,103 +154,20 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: WriteStyles.headerSmall(context),
               ),
               GlobalVariables.spaceSmall(),
-              TextButton(
-                  onPressed: () =>
-                      servicesProvider.pickImage(ImageSource.camera),
-                  child: Container(
-                    width: 190.w,
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(CarbonIcons.camera),
-                        SizedBox(width: 5.w),
-                        Text(
-                          'Upload from Camera',
-                          style: WriteStyles.bodySmall(context).copyWith(
-                              height: 3,
-                              color: Theme.of(context).colorScheme.primary),
-                        ),
-                      ],
-                    ),
-                  )),
-              TextButton(
-                  onPressed: () =>
-                      servicesProvider.pickImage(ImageSource.gallery),
-                  child: Container(
-                    width: 190.w,
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(CarbonIcons.image),
-                        SizedBox(width: 5.w),
-                        Text(
-                          'Upload from Gallery',
-                          style: WriteStyles.bodySmall(context).copyWith(
-                              height: 3,
-                              color: Theme.of(context).colorScheme.primary),
-                        ),
-                      ],
-                    ),
-                  )),
-              isUpload
-                  ? TextButton(
-                      onPressed: () => servicesProvider.uploadImage(),
-                      child: Container(
-                        width: 190.w,
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        color: Theme.of(context).colorScheme.primary,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              CarbonIcons.cloud,
-                              color: Theme.of(context).colorScheme.background,
-                            ),
-                            SizedBox(width: 5.w),
-                            Text(
-                              'Update Profile Picture',
-                              style: WriteStyles.bodySmall(context).copyWith(
-                                  height: 3,
-                                  color:
-                                      Theme.of(context).colorScheme.background),
-                            ),
-                          ],
-                        ),
-                      ))
-                  : const SizedBox(),
-              isUpload == true
-                  ? TextButton(
-                      onPressed: () {
-                        servicesProvider.imageFile = null;
-                        setState(() {});
-                      },
-                      child: Container(
-                        width: 190.w,
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(CarbonIcons.image),
-                            SizedBox(width: 5.w),
-                            Text(
-                              'Cancel',
-                              style: WriteStyles.bodySmall(context).copyWith(
-                                  height: 3,
-                                  color: Theme.of(context).colorScheme.primary),
-                            ),
-                          ],
-                        ),
-                      ))
-                  : const SizedBox(),
               GlobalVariables.spaceMedium(),
-              ProfileTile(
-                  icon: CarbonIcons.user_data,
-                  onTap: () {
-                    editUsernameDialog(context, servicesProvider);
-                  },
-                  text: 'Edit User name'),
+              ProfileInfo(
+                title: 'Username',
+                content: servicesProvider.user?.displayName ?? 'Pleibian',
+                icon: Icons.edit,
+                onTap: () {
+                  editUsernameDialog(context, servicesProvider);
+                },
+              ),
+              GlobalVariables.spaceMedium(),
+              ProfileInfo(
+                title: 'E-Mail',
+                content: servicesProvider.user?.email as String,
+              ),
               GlobalVariables.spaceMedium(),
               IconButton(
                   onPressed: () {
@@ -199,10 +188,15 @@ class _ProfilePageState extends State<ProfilePage> {
                       ],
                     ),
                   )),
-              GlobalVariables.spaceSmall(),
               IconButton(
-                  onPressed: () {
-                    deleteAccountDialog(context, servicesProvider);
+                  onPressed: () async {
+                    if (isGoogleAccount == true) {
+                      await servicesProvider.googleDeleteUser(context);
+                      // ignore: use_build_context_synchronously
+                      Navigator.pushNamed(context, 'onBoarding');
+                    } else {
+                      deleteAccountDialog(context, servicesProvider);
+                    }
                   },
                   icon: SizedBox(
                     height: 30.h,
@@ -217,7 +211,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         GlobalVariables.spaceSmaller(isWidth: true),
                         const Icon(
                           CarbonIcons.delete,
-                          color: Colors.red,
                         )
                       ],
                     ),
@@ -230,46 +223,55 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
-class ProfileTile extends StatelessWidget {
+// ignore: must_be_immutable
+class ProfileInfo extends StatelessWidget {
+  final String title;
+  final String content;
   final IconData? icon;
-  final void Function()? onTap;
-  final String text;
-  const ProfileTile(
-      {super.key, required this.icon, required this.onTap, required this.text});
+  void Function()? onTap;
+  ProfileInfo(
+      {super.key,
+      required this.title,
+      required this.content,
+      this.icon,
+      this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      icon,
-                      size: 30,
-                    ),
-                    GlobalVariables.spaceMedium(isWidth: true),
-                    Text(
-                      text,
-                      style: WriteStyles.headerSmall(context),
-                    )
-                  ],
-                ),
-                const Icon(
-                  Icons.chevron_right_rounded,
-                  size: 30,
-                )
-              ],
-            ),
+    return Padding(
+      padding: GlobalVariables.normPadding,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: GlobalVariables.cardPadding,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Theme.of(context).colorScheme.primary)),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: WriteStyles.headerSmall(context).copyWith(
+                        fontWeight: FontWeight.normal,
+                        color: Theme.of(context).colorScheme.primary),
+                  ),
+                  Text(
+                    content,
+                    style: WriteStyles.bodyMedium(context).copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.primary),
+                  ),
+                ],
+              ),
+              Icon(icon)
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 }

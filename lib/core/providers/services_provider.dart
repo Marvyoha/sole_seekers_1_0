@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sole_seekers_1_0/screens/auth_screens/google_signup.dart';
 
 import '../models/user_info.dart';
 
@@ -30,7 +31,7 @@ class ServicesProvider extends ChangeNotifier {
   String? docId;
   // final Connectivity _connectivity = Connectivity();
   List<QueryDocumentSnapshot>? _catalogs;
-  UserDetails? _userDetails;
+  late UserDetails _userDetails;
   bool _loader = false;
 
   //Getters
@@ -40,7 +41,7 @@ class ServicesProvider extends ChangeNotifier {
   FirebaseStorage? get storage => _storage;
   User? get user => _auth.currentUser;
   List<QueryDocumentSnapshot>? get catalogs => _catalogs;
-  UserDetails? get userDetails => _userDetails;
+  UserDetails get userDetails => _userDetails;
   bool get loader => _loader;
   File? get imageFile => _imageFile;
   String? get imageUrl => _imageUrl;
@@ -63,7 +64,7 @@ class ServicesProvider extends ChangeNotifier {
     _catalogs = newCatalogs;
   }
 
-  set userDetails(UserDetails? newUserDetails) {
+  set userDetails(UserDetails newUserDetails) {
     _userDetails = newUserDetails;
   }
 
@@ -121,7 +122,7 @@ class ServicesProvider extends ChangeNotifier {
         await _auth.createUserWithEmailAndPassword(
             email: email.trim(), password: password.trim());
 
-        storeUserDetails(email: email, username: username);
+        storeUserDetails(username: username);
         Navigator.pushReplacementNamed(
           context,
           'login',
@@ -129,7 +130,6 @@ class ServicesProvider extends ChangeNotifier {
         notifyListeners();
       } on FirebaseAuthException catch (e) {
         debugPrint('Authentication Error: [${e.code}]' ' ${e.message}');
-
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             behavior: SnackBarBehavior.floating,
@@ -162,7 +162,7 @@ class ServicesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future googleSignIn() async {
+  Future googleSignIn(BuildContext context) async {
     notifyListeners();
     try {
       // Begin interactive sign in process
@@ -172,11 +172,48 @@ class ServicesProvider extends ChangeNotifier {
       // Create a new credential for user
       final credential = GoogleAuthProvider.credential(
           accessToken: gAuth?.accessToken, idToken: gAuth?.idToken);
+      // Signin with credentials
+      await auth?.signInWithCredential(credential);
 
-      return await auth?.signInWithCredential(credential);
+      // To check if the user exists already
+      var collection = await firestore?.collection('users').get();
+
+      if (collection != null) {
+        for (var element in collection.docs) {
+          if (element['uid'] == user?.uid) {
+            auth?.authStateChanges().listen((user) {
+              if (user != null) {
+                // Navigate to home
+                Navigator.pushReplacementNamed(
+                  context,
+                  'mainNav',
+                );
+              }
+            });
+          }
+        }
+      } else {
+        Navigator.pushReplacementNamed(
+          context,
+          'googleSignup',
+        );
+      }
     } on FirebaseAuthException catch (e) {
       debugPrint('Authentication Error: [${e.code}]' ' ${e.message}');
     }
+  }
+
+  bool isUserSignedInWithGoogle() {
+    if (user != null) {
+      // Check if the user's provider data contains Google
+      for (final providerData in user!.providerData) {
+        if (providerData.providerId == 'google.com') {
+          return true; // User is signed in with Google
+        }
+      }
+    }
+
+    return false; // User is not signed in with Google
   }
 
   Future<void> resetPassword(String email, BuildContext context) async {
@@ -219,27 +256,31 @@ class ServicesProvider extends ChangeNotifier {
   }
 
   Future<void> signOut(BuildContext context) async {
+    bool isGoogle = await isUserSignedInWithGoogle();
+    if (isGoogle == true) {
+      await GoogleSignIn().signOut();
+    }
+
     await _auth.signOut();
 
+    // TO CLEAR LOCAL DATA
+    userDetails = UserDetails.nullify();
+    locale.delete('catalogs');
+    docId = '';
+
     Future.delayed(const Duration(milliseconds: 1700), () {
-      Navigator.pushReplacementNamed(context, 'login');
+      Navigator.pushNamedAndRemoveUntil(context, 'login', (route) => false);
     });
     notifyListeners();
   }
 
-  Future<void> deleteUser(BuildContext context, String password) async {
+  Future<void> googleDeleteUser(BuildContext context) async {
     // loader = true;
     // notifyListeners();
     try {
       if (user != null) {
         // TO DELETE FROM FIREBASE AUTH
-        // ignore: await_only_futures
-        var credential = await EmailAuthProvider.credential(
-          email: user!.email!,
-          password: password,
-        );
-        await user?.reauthenticateWithCredential(credential);
-        await user?.delete();
+        await GoogleSignIn().disconnect();
 
         // TO DELETE FROM FIREBASE FIRESTORE
         await firestore?.collection('users').doc(docId).delete();
@@ -256,7 +297,61 @@ class ServicesProvider extends ChangeNotifier {
           await folderRef?.delete();
         }
         // TO CLEAR LOCAL DATA
-        userDetails = null;
+        userDetails = UserDetails.nullify();
+        locale.delete('catalogs');
+        docId = '';
+
+        // loader = false;
+        // notifyListeners();
+      }
+    } on FirebaseAuthException catch (e) {
+      debugPrint('Deletion Error: ${e.message}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Center(
+            child: Text(
+              e.message!,
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
+      );
+    }
+    // loader = false;
+    // notifyListeners();
+  }
+
+  Future<void> deleteUser(BuildContext context, String password) async {
+    // loader = true;
+    // notifyListeners();
+    try {
+      if (user != null) {
+        // TO DELETE FROM FIREBASE AUTH
+        // ignore: await_only_futures
+        AuthCredential credential = await EmailAuthProvider.credential(
+          email: user!.email!,
+          password: password,
+        );
+        await user?.reauthenticateWithCredential(credential);
+        await user?.delete();
+
+        // TO DELETE FROM FIREBASE FIRESTORE
+        await firestore?.collection('users').doc(docId).delete();
+
+        // TO DELETE FROM FIREBASE STORAGE
+        final snap = storage?.refFromURL(userDetails.profilePicture);
+        // Delete the image file
+        await snap?.delete();
+        final folderRef = snap?.parent;
+        // Check if the folder is empty
+        final folderList = await folderRef?.listAll();
+        if (folderList!.items.isEmpty) {
+          // If the folder is empty, delete the folder
+          await folderRef?.delete();
+        }
+        // TO CLEAR LOCAL DATA
+        userDetails = UserDetails.nullify();
         locale.delete('catalogs');
         docId = '';
 
@@ -289,14 +384,13 @@ class ServicesProvider extends ChangeNotifier {
     return catalogs;
   }
 
-  Future<void> storeUserDetails(
-      {required String email, required String username}) async {
+  Future<void> storeUserDetails({required String username}) async {
     try {
       await user?.updateDisplayName(username);
       await firestore?.collection('users').add({
         'profilePicture': '',
         'uid': user?.uid,
-        'email': email.trim(),
+        'email': user?.email?.trim(),
         'username': username.trim(),
         'wishlist': [],
         'cart': [],
@@ -397,8 +491,8 @@ class ServicesProvider extends ChangeNotifier {
     try {
       for (Cart element in userDetails!.cart) {
         if (element.id == cartDetails.id) {
-          cartDetails.quantity += element.quantity;
-          cartDetails.total += element.total;
+          // cartDetails.quantity += element.quantity;
+          // cartDetails.total += element.total;
           userDetails!.cart
               .removeWhere((element) => element.id == cartDetails.id);
           break;
@@ -439,6 +533,7 @@ class ServicesProvider extends ChangeNotifier {
 
   Future<void> updateUserDetails() async {
     try {
+      await user?.updatePhotoURL(userDetails?.profilePicture);
       await user?.updateDisplayName(userDetails?.username);
       var updateUser = userDetails?.toJson();
       await firestore

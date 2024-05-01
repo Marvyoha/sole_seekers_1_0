@@ -223,19 +223,19 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               servicesProvider.addToCart(
                                   cartDetails: addItemtoCart);
 
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  duration: const Duration(milliseconds: 1270),
-                                  content: Center(
-                                    child: Text('Shoes added to cart',
-                                        style: WriteStyles.bodyMedium(context)
-                                            .copyWith(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .background)),
-                                  ),
-                                ),
-                              );
+                              // ScaffoldMessenger.of(context).showSnackBar(
+                              //   SnackBar(
+                              //     duration: const Duration(milliseconds: 1270),
+                              //     content: Center(
+                              //       child: Text('Shoes added to cart',
+                              //           style: WriteStyles.bodyMedium(context)
+                              //               .copyWith(
+                              //                   color: Theme.of(context)
+                              //                       .colorScheme
+                              //                       .background)),
+                              //     ),
+                              //   ),
+                              // );
                             },
                             child: Container(
                               decoration: BoxDecoration(
