@@ -1,10 +1,9 @@
-import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carbon_icons/carbon_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:sole_seekers_1_0/constant/widgets/customButton2.dart';
 
 import '../../../constant/font_styles.dart';
 import '../../../constant/global_variables.dart';
@@ -22,7 +21,7 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
-    int subTotal = 0, delivery = 25, grandTotal = 0;
+    int subTotal = 0, delivery = 7, grandTotal = 0;
 
     final servicesProvider =
         Provider.of<ServicesProvider>(context, listen: true);
@@ -323,54 +322,17 @@ class _CartPageState extends State<CartPage> {
                         ],
                       ),
                       GlobalVariables.spaceSmall(),
-                      CheckOutButton(
+                      CustomButton2(
                         text: 'Checkout',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.pushNamed(context, 'personalDetails');
+                        },
                       )
                     ],
                   ),
                 ),
               ],
             ),
-    );
-  }
-}
-
-class CheckOutButton extends StatelessWidget {
-  final void Function()? onTap;
-  final String text;
-  const CheckOutButton({
-    super.key,
-    this.onTap,
-    required this.text,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Material(
-          color: Theme.of(context).colorScheme.primary,
-          borderRadius: BorderRadius.circular(10),
-          elevation: 4,
-          shadowColor: Theme.of(context).colorScheme.primary,
-          child: Container(
-            decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
-                borderRadius: BorderRadius.circular(10)),
-            height: 49.h,
-            width: 301.w,
-            child: Center(
-              child: Text(
-                text,
-                style: WriteStyles.bodyMedium(context)
-                    .copyWith(color: Theme.of(context).colorScheme.background),
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

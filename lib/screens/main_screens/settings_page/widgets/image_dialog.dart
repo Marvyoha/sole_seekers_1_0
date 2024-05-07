@@ -3,9 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sole_seekers_1_0/constant/global_variables.dart';
 
-import '../../../../constant/font_styles.dart';
 import '../../../../constant/widgets/custom_button.dart';
-import '../../../../constant/widgets/custom_textfield.dart';
 import '../../../../core/providers/services_provider.dart';
 
 imageDialog(BuildContext context, ServicesProvider provider) {
@@ -15,7 +13,7 @@ imageDialog(BuildContext context, ServicesProvider provider) {
         return AlertDialog(
           backgroundColor: Theme.of(context).colorScheme.background,
           content: Container(
-            padding: EdgeInsets.symmetric(),
+            padding: const EdgeInsets.symmetric(),
             width: 100.w,
             height: 160.h,
             child: Column(

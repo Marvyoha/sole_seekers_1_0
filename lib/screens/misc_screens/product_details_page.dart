@@ -97,7 +97,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         child: CachedNetworkImage(
                           key: UniqueKey(),
                           placeholder: (context, url) {
-                            return Image.asset(GlobalVariables.appIcon);
+                            return Image.asset(
+                              GlobalVariables.appIcon,
+                              color: Theme.of(context).colorScheme.primary,
+                            );
                           },
                           imageUrl: widget.item['image'],
                           width: 343.w,

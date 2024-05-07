@@ -36,6 +36,8 @@ class MainApp extends StatelessWidget {
     ServicesProvider().getCurrentUserDoc();
     ServicesProvider().loadData();
     return ScreenUtilInit(
+      splitScreenMode: true,
+      minTextAdapt: true,
       designSize: const Size(360, 800),
       builder: (context, child) => MaterialApp(
         title: 'SoleSeekers',
