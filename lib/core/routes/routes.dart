@@ -9,7 +9,7 @@ import '../../screens/auth_screens/forgot_password.dart';
 import '../../screens/auth_screens/google_signup.dart';
 import '../../screens/auth_screens/login.dart';
 import '../../screens/auth_screens/signup.dart';
-import '../../screens/main_screens/cartpage/checkout_screens/card_details.dart';
+import '../../screens/main_screens/cartpage/checkout_screens/payment_details.dart';
 import '../../screens/main_screens/cartpage/checkout_screens/confirmation_page.dart';
 import '../../screens/main_screens/cartpage/checkout_screens/personal_details.dart';
 import '../../screens/main_screens/homepage/homepage.dart';
@@ -45,8 +45,6 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const ProfilePage());
       case 'personalDetails':
         return MaterialPageRoute(builder: (_) => const PersonalDetails());
-      case 'cardDetails':
-        return MaterialPageRoute(builder: (_) => const CardDetails());
       case 'confirmationPage':
         return MaterialPageRoute(builder: (_) => const ConfirmationPage());
       case 'privacyPolicy':

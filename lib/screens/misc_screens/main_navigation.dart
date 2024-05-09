@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:sole_seekers_1_0/core/providers/services_provider.dart';
 
 import '../../constant/font_styles.dart';
 import '../main_screens/cartpage/cartpage.dart';

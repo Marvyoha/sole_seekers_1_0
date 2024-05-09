@@ -79,7 +79,8 @@ class Cart {
 
 class PurchaseHistory {
   String nameOfRecipient;
-  List<OrderedItems> orderedItems;
+  List<Cart> orderedItems;
+  int phoneNumber;
   int grandTotal;
   String timeOrdered;
   Location location;
@@ -87,6 +88,7 @@ class PurchaseHistory {
   PurchaseHistory({
     required this.nameOfRecipient,
     required this.orderedItems,
+    required this.phoneNumber,
     required this.grandTotal,
     required this.timeOrdered,
     required this.location,
@@ -95,9 +97,9 @@ class PurchaseHistory {
   PurchaseHistory.fromJson(Map<String, dynamic> json)
       : nameOfRecipient = json['nameOfRecipient'],
         orderedItems = json['orderedItems'] != null
-            ? List<OrderedItems>.from(
-                json['orderedItems'].map((x) => OrderedItems.fromJson(x)))
+            ? List<Cart>.from(json['orderedItems'].map((x) => Cart.fromJson(x)))
             : [],
+        phoneNumber = json['phoneNumber'],
         grandTotal = json['grandTotal'],
         timeOrdered = json['timeOrdered'],
         location = json['location'] != null
@@ -108,34 +110,10 @@ class PurchaseHistory {
     return {
       'nameOfRecipient': nameOfRecipient,
       'orderedItems': orderedItems.map((x) => x.toJson()).toList(),
+      'phoneNumber': phoneNumber,
       'grandTotal': grandTotal,
       'timeOrdered': timeOrdered,
       'location': location.toJson(),
-    };
-  }
-}
-
-class OrderedItems {
-  int id;
-  int quantity;
-  int total;
-
-  OrderedItems({
-    required this.id,
-    required this.quantity,
-    required this.total,
-  });
-
-  OrderedItems.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        quantity = json['quantity'],
-        total = json['total'];
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'quantity': quantity,
-      'total': total,
     };
   }
 }
@@ -160,3 +138,32 @@ class Location {
     };
   }
 }
+
+
+
+// class OrderedItems {
+//   int id;
+//   int quantity;
+//   int total;
+
+//   OrderedItems({
+//     required this.id,
+//     required this.quantity,
+//     required this.total,
+//   });
+
+//   OrderedItems.fromJson(Map<String, dynamic> json)
+//       : id = json['id'],
+//         quantity = json['quantity'],
+//         total = json['total'];
+
+//   Map<String, dynamic> toJson() {
+//     return {
+//       'id': id,
+//       'quantity': quantity,
+//       'total': total,
+//     };
+//   }
+// }
+
+

@@ -21,7 +21,7 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
-    int subTotal = 0, delivery = 7, grandTotal = 0;
+    int subTotal = 0, delivery = 25, grandTotal = 0;
 
     final servicesProvider =
         Provider.of<ServicesProvider>(context, listen: true);

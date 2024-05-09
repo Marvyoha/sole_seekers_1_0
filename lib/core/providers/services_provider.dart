@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:sole_seekers_1_0/screens/auth_screens/google_signup.dart';
 
 import '../models/user_info.dart';
 
@@ -286,7 +285,7 @@ class ServicesProvider extends ChangeNotifier {
         await firestore?.collection('users').doc(docId).delete();
 
         // TO DELETE FROM FIREBASE STORAGE
-        final snap = storage?.refFromURL(userDetails!.profilePicture);
+        final snap = storage?.refFromURL(userDetails.profilePicture);
         // Delete the image file
         await snap?.delete();
         final folderRef = snap?.parent;
@@ -437,7 +436,7 @@ class ServicesProvider extends ChangeNotifier {
   List<Map> getWishlist() {
     List<Map> wishlist = [];
     try {
-      for (int id in userDetails!.wishlist) {
+      for (int id in userDetails.wishlist) {
         for (var element in catalogs!) {
           if (element['id'] == id) {
             wishlist.add(element.data() as Map<dynamic, dynamic>);
@@ -474,7 +473,7 @@ class ServicesProvider extends ChangeNotifier {
   List<Map> getCart() {
     List<Map> cart = [];
     try {
-      for (Cart item in userDetails!.cart) {
+      for (Cart item in userDetails.cart) {
         for (var element in catalogs!) {
           if (element['id'] == item.id) {
             cart.add(element.data() as Map<dynamic, dynamic>);
@@ -489,11 +488,11 @@ class ServicesProvider extends ChangeNotifier {
 
   void addToCart({required Cart cartDetails}) {
     try {
-      for (Cart element in userDetails!.cart) {
+      for (Cart element in userDetails.cart) {
         if (element.id == cartDetails.id) {
           // cartDetails.quantity += element.quantity;
           // cartDetails.total += element.total;
-          userDetails!.cart
+          userDetails.cart
               .removeWhere((element) => element.id == cartDetails.id);
           break;
         }
@@ -509,7 +508,7 @@ class ServicesProvider extends ChangeNotifier {
 
   void removeFromCart({required int id}) {
     try {
-      for (var item in userDetails!.cart) {
+      for (var item in userDetails.cart) {
         if (item.id == id) {
           userDetails?.cart.remove(item);
           break;
@@ -524,7 +523,7 @@ class ServicesProvider extends ChangeNotifier {
 
   int getSubTotal() {
     int cartTotal = 0;
-    for (Cart element in userDetails!.cart) {
+    for (Cart element in userDetails.cart) {
       cartTotal += element.total;
     }
 
@@ -569,8 +568,8 @@ class ServicesProvider extends ChangeNotifier {
   Future<void> uploadImage() async {
     if (_imageFile == null) return;
 
-    if (userDetails!.profilePicture.isNotEmpty) {
-      final snap = storage?.refFromURL(userDetails!.profilePicture);
+    if (userDetails.profilePicture.isNotEmpty) {
+      final snap = storage?.refFromURL(userDetails.profilePicture);
       await snap?.delete();
       userDetails?.profilePicture = '';
     }

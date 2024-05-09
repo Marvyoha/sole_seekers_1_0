@@ -48,7 +48,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         Provider.of<ServicesProvider>(context, listen: true);
     bool wishListChecker() {
       bool checker;
-      List wishlist = servicesProvider.userDetails!.wishlist;
+      List wishlist = servicesProvider.userDetails.wishlist;
       if (wishlist.contains(widget.item['id'])) {
         checker = true;
       } else {
@@ -59,7 +59,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     }
 
     bool cartChecker() {
-      List cart = servicesProvider.userDetails!.cart;
+      List cart = servicesProvider.userDetails.cart;
       for (Cart element in cart) {
         if (element.id == widget.item['id']) {
           return true;
