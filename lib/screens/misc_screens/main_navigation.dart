@@ -16,8 +16,7 @@ import '../main_screens/settings_page/settingspage.dart';
 import '../main_screens/wishlist/wishlistpage.dart';
 
 class MainNav extends StatefulWidget {
-  final int? index;
-  const MainNav({this.index, super.key});
+  const MainNav({super.key});
 
   @override
   State<MainNav> createState() => _MainNavState();
@@ -121,6 +120,7 @@ class _MainNavState extends State<MainNav> {
   @override
   void dispose() {
     subscription.cancel();
+    currentIndex = 0;
     super.dispose();
   }
 

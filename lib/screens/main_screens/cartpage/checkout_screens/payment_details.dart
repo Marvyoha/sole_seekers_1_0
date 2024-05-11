@@ -9,7 +9,6 @@ import 'package:sole_seekers_1_0/screens/main_screens/cartpage/widgets/process_s
 
 import '../../../../constant/font_styles.dart';
 import '../../../../constant/global_variables.dart';
-import '../../../../constant/widgets/customButton2.dart';
 import '../../../../constant/widgets/custom_button.dart';
 import '../../../../constant/widgets/custom_textfield.dart';
 import '../../../../core/providers/services_provider.dart';
@@ -86,7 +85,7 @@ class _CardDetailsState extends State<CardDetails> {
         servicesProvider.userDetails.cart = [];
         servicesProvider.updateUserDetails();
         servicesProvider.loader = false;
-        Navigator.pushNamed(context, 'confirmationPage');
+        Navigator.pushReplacementNamed(context, 'confirmationPage');
       });
     }
 
@@ -128,7 +127,6 @@ class _CardDetailsState extends State<CardDetails> {
           padding: GlobalVariables.normPadding,
           color: Theme.of(context).colorScheme.background,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               ProcessShowcase(
                 isPersonalDetails: true,
@@ -155,81 +153,85 @@ class _CardDetailsState extends State<CardDetails> {
               ),
               GlobalVariables.spaceMedium(),
               isCard == true
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Card Number',
-                            style: WriteStyles.bodyMedium(context).copyWith(
-                                color: Theme.of(context).colorScheme.primary)),
-                        GlobalVariables.spaceSmaller(),
-                        CustomTextField(
-                          hintText: '',
-                          isNumber: true,
-                          controller: cardNumberController,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(16),
-                            CardNumberInputFormatter(),
-                          ],
-                        ),
-                        GlobalVariables.spaceMedium(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Expiry Date',
-                                    style: WriteStyles.bodyMedium(context)
-                                        .copyWith(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary)),
-                                GlobalVariables.spaceSmaller(),
-                                SizedBox(
-                                  height: 60.h,
-                                  width: 150.w,
-                                  child: CustomTextField(
-                                    hintText: 'MM/YY',
-                                    isNumber: true,
-                                    controller: expiryDateController,
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.digitsOnly,
-                                      LengthLimitingTextInputFormatter(4),
-                                      ExpiryDateFormatter()
-                                    ],
+                  ? Padding(
+                      padding: GlobalVariables.normPadding,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Card Number',
+                              style: WriteStyles.bodyMedium(context).copyWith(
+                                  color:
+                                      Theme.of(context).colorScheme.primary)),
+                          GlobalVariables.spaceSmaller(),
+                          CustomTextField(
+                            hintText: '',
+                            isNumber: true,
+                            controller: cardNumberController,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(16),
+                              CardNumberInputFormatter(),
+                            ],
+                          ),
+                          GlobalVariables.spaceMedium(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Expiry Date',
+                                      style: WriteStyles.bodyMedium(context)
+                                          .copyWith(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary)),
+                                  GlobalVariables.spaceSmaller(),
+                                  SizedBox(
+                                    height: 50.h,
+                                    width: 120.w,
+                                    child: CustomTextField(
+                                      hintText: 'MM/YY',
+                                      isNumber: true,
+                                      controller: expiryDateController,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                        LengthLimitingTextInputFormatter(4),
+                                        ExpiryDateFormatter()
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('CVV/CVC',
-                                    style: WriteStyles.bodyMedium(context)
-                                        .copyWith(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary)),
-                                GlobalVariables.spaceSmaller(),
-                                SizedBox(
-                                  height: 60.h,
-                                  width: 150.w,
-                                  child: CustomTextField(
-                                    hintText: '',
-                                    isNumber: true,
-                                    controller: cvvController,
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.digitsOnly,
-                                      LengthLimitingTextInputFormatter(3),
-                                    ],
+                                ],
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('CVV/CVC',
+                                      style: WriteStyles.bodyMedium(context)
+                                          .copyWith(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary)),
+                                  GlobalVariables.spaceSmaller(),
+                                  SizedBox(
+                                    height: 50.h,
+                                    width: 120.w,
+                                    child: CustomTextField(
+                                      hintText: '',
+                                      isNumber: true,
+                                      controller: cvvController,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                        LengthLimitingTextInputFormatter(3),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            )
-                          ],
-                        )
-                      ],
+                                ],
+                              )
+                            ],
+                          )
+                        ],
+                      ),
                     )
                   : const SizedBox(),
             ],
@@ -247,9 +249,7 @@ class _CardDetailsState extends State<CardDetails> {
               isLoading: servicesProvider.loader,
               text: 'Continue Order - \$$grandTotal',
               onTap: () {
-                isCard == true
-                    ? validationChecker()
-                    : Navigator.pushNamed(context, 'cardDetails');
+                validationChecker();
               },
             )
           ],
