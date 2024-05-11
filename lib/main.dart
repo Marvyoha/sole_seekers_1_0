@@ -33,8 +33,6 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ServicesProvider().getCurrentUserDoc();
-    ServicesProvider().loadData();
     return ScreenUtilInit(
       splitScreenMode: true,
       minTextAdapt: true,

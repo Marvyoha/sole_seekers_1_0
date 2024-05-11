@@ -3,11 +3,9 @@ import 'package:carbon_icons/carbon_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../constant/font_styles.dart';
 import '../../../constant/global_variables.dart';
-
 import '../../../core/providers/services_provider.dart';
 import '../../misc_screens/product_details_page.dart';
 
@@ -21,54 +19,56 @@ class WishListPage extends StatefulWidget {
 class _WishListPageState extends State<WishListPage> {
   @override
   Widget build(BuildContext context) {
-    final servicesProvider =
-        Provider.of<ServicesProvider>(context, listen: true);
-    // servicesProvider.getCurrentUserDoc();
-    // servicesProvider.getCatalogs();
+    Widget mainBody() {
+      return Consumer<ServicesProvider>(
+        builder: (context, servicesProvider, child) {
+          if (servicesProvider.userDetails == null) {
+            return Center(
+              child: Column(
+                children: [
+                  GlobalVariables.spaceLarge(context),
+                  const Icon(
+                    CarbonIcons.connection_signal,
+                    size: 90,
+                  ),
+                  GlobalVariables.spaceMedium(),
+                  Text(
+                    'Loading Wish List...',
+                    textAlign: TextAlign.center,
+                    style: WriteStyles.headerMedium(context)
+                        .copyWith(fontWeight: FontWeight.normal),
+                  ),
+                  GlobalVariables.spaceMedium(),
+                  CircularProgressIndicator(
+                    color: Theme.of(context).colorScheme.primary,
+                  )
+                ],
+              ),
+            );
+          }
+          List<Map>? wishlistArray = servicesProvider.getWishlist();
 
-    List<Map>? wishlistArray = servicesProvider.getWishlist();
-
-    // bool isWishlisted() {
-    //   if (servicesProvider.userDetails.wishlist.isEmpty) {
-    //     return true;
-    //   } else {
-    //     return false;
-    //   }
-    // }
-
-    bool isEmpty = servicesProvider.userDetails.wishlist.isEmpty;
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          centerTitle: true,
-          title: Text(
-            'Wish List',
-            style: WriteStyles.headerMedium(context)
-                .copyWith(color: Theme.of(context).colorScheme.primary),
-          ),
-        ),
-        body: isEmpty
-            ? Center(
-                child: Column(
-                  children: [
-                    GlobalVariables.spaceLarge(context),
-                    GlobalVariables.spaceLarge(context),
-                    const Icon(
-                      CarbonIcons.star_review,
-                      size: 90,
-                    ),
-                    GlobalVariables.spaceMedium(),
-                    Text(
-                      'No Wishlisted Shoes... ',
-                      style: WriteStyles.headerMedium(context)
-                          .copyWith(fontWeight: FontWeight.normal),
-                    ),
-                  ],
-                ),
-              )
-            : Skeletonizer(
-                enabled: isEmpty,
-                child: ListView.builder(
+          bool isEmpty = servicesProvider.userDetails!.wishlist.isEmpty;
+          return isEmpty
+              ? Center(
+                  child: Column(
+                    children: [
+                      GlobalVariables.spaceLarge(context),
+                      GlobalVariables.spaceLarge(context),
+                      const Icon(
+                        CarbonIcons.star_review,
+                        size: 90,
+                      ),
+                      GlobalVariables.spaceMedium(),
+                      Text(
+                        'No Wishlisted Shoes... ',
+                        style: WriteStyles.headerMedium(context)
+                            .copyWith(fontWeight: FontWeight.normal),
+                      ),
+                    ],
+                  ),
+                )
+              : ListView.builder(
                   itemCount: wishlistArray.length,
                   itemBuilder: (BuildContext context, int index) {
                     final item = wishlistArray[index];
@@ -172,7 +172,21 @@ class _WishListPageState extends State<WishListPage> {
                       ],
                     );
                   },
-                ),
-              ));
+                );
+        },
+      );
+    }
+
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          centerTitle: true,
+          title: Text(
+            'Wish List',
+            style: WriteStyles.headerMedium(context)
+                .copyWith(color: Theme.of(context).colorScheme.primary),
+          ),
+        ),
+        body: mainBody());
   }
 }

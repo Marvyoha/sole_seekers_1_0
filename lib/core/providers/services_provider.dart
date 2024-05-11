@@ -17,10 +17,7 @@ final Box locale = Hive.box('localStorage');
 
 class ServicesProvider extends ChangeNotifier {
   ServicesProvider() {
-    // checkInternetConnection();
-    getCurrentUserDoc();
-    // locale.delete('catalogs');
-    loadData();
+    initialiseData();
   }
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
@@ -30,8 +27,9 @@ class ServicesProvider extends ChangeNotifier {
   String? docId;
   // final Connectivity _connectivity = Connectivity();
   List<QueryDocumentSnapshot>? _catalogs;
-  late UserDetails _userDetails;
+  UserDetails? _userDetails;
   bool _loader = false;
+  bool _isInitialised = false;
 
   //Getters
   // Connectivity? get connectionStatus => _connectionStatus;
@@ -40,8 +38,9 @@ class ServicesProvider extends ChangeNotifier {
   FirebaseStorage? get storage => _storage;
   User? get user => _auth.currentUser;
   List<QueryDocumentSnapshot>? get catalogs => _catalogs;
-  UserDetails get userDetails => _userDetails;
+  UserDetails? get userDetails => _userDetails;
   bool get loader => _loader;
+  bool get isInitialised => _isInitialised;
   File? get imageFile => _imageFile;
   String? get imageUrl => _imageUrl;
 
@@ -63,8 +62,18 @@ class ServicesProvider extends ChangeNotifier {
     _catalogs = newCatalogs;
   }
 
-  set userDetails(UserDetails newUserDetails) {
+  set userDetails(UserDetails? newUserDetails) {
     _userDetails = newUserDetails;
+  }
+
+  initialiseData() async {
+    try {
+      await getCurrentUserDoc();
+      await loadData();
+      _isInitialised = true;
+    } catch (e) {
+      debugPrint('Error Initialising Data: $e');
+    }
   }
 
 // FIREBASE AUTHENTICATION FUNCTIONS
@@ -79,10 +88,8 @@ class ServicesProvider extends ChangeNotifier {
       auth?.authStateChanges().listen((user) {
         if (user != null) {
           // Navigate to home
-          Navigator.pushReplacementNamed(
-            context,
-            'mainNav',
-          );
+          Navigator.pushNamedAndRemoveUntil(
+              context, 'mainApp', (route) => false);
         }
       });
       notifyListeners();
@@ -285,7 +292,7 @@ class ServicesProvider extends ChangeNotifier {
         await firestore?.collection('users').doc(docId).delete();
 
         // TO DELETE FROM FIREBASE STORAGE
-        final snap = storage?.refFromURL(userDetails.profilePicture);
+        final snap = storage?.refFromURL(userDetails!.profilePicture);
         // Delete the image file
         await snap?.delete();
         final folderRef = snap?.parent;
@@ -339,7 +346,7 @@ class ServicesProvider extends ChangeNotifier {
         await firestore?.collection('users').doc(docId).delete();
 
         // TO DELETE FROM FIREBASE STORAGE
-        final snap = storage?.refFromURL(userDetails.profilePicture);
+        final snap = storage?.refFromURL(userDetails!.profilePicture);
         // Delete the image file
         await snap?.delete();
         final folderRef = snap?.parent;
@@ -436,7 +443,7 @@ class ServicesProvider extends ChangeNotifier {
   List<Map> getWishlist() {
     List<Map> wishlist = [];
     try {
-      for (int id in userDetails.wishlist) {
+      for (int id in userDetails!.wishlist) {
         for (var element in catalogs!) {
           if (element['id'] == id) {
             wishlist.add(element.data() as Map<dynamic, dynamic>);
@@ -473,7 +480,7 @@ class ServicesProvider extends ChangeNotifier {
   List<Map> getCart() {
     List<Map> cart = [];
     try {
-      for (Cart item in userDetails.cart) {
+      for (Cart item in userDetails!.cart) {
         for (var element in catalogs!) {
           if (element['id'] == item.id) {
             cart.add(element.data() as Map<dynamic, dynamic>);
@@ -488,11 +495,11 @@ class ServicesProvider extends ChangeNotifier {
 
   void addToCart({required Cart cartDetails}) {
     try {
-      for (Cart element in userDetails.cart) {
+      for (Cart element in userDetails!.cart) {
         if (element.id == cartDetails.id) {
           // cartDetails.quantity += element.quantity;
           // cartDetails.total += element.total;
-          userDetails.cart
+          userDetails!.cart
               .removeWhere((element) => element.id == cartDetails.id);
           break;
         }
@@ -508,7 +515,7 @@ class ServicesProvider extends ChangeNotifier {
 
   void removeFromCart({required int id}) {
     try {
-      for (var item in userDetails.cart) {
+      for (var item in userDetails!.cart) {
         if (item.id == id) {
           userDetails?.cart.remove(item);
           break;
@@ -523,7 +530,7 @@ class ServicesProvider extends ChangeNotifier {
 
   int getSubTotal() {
     int cartTotal = 0;
-    for (Cart element in userDetails.cart) {
+    for (Cart element in userDetails!.cart) {
       cartTotal += element.total;
     }
 
@@ -568,8 +575,8 @@ class ServicesProvider extends ChangeNotifier {
   Future<void> uploadImage() async {
     if (_imageFile == null) return;
 
-    if (userDetails.profilePicture.isNotEmpty) {
-      final snap = storage?.refFromURL(userDetails.profilePicture);
+    if (userDetails!.profilePicture.isNotEmpty) {
+      final snap = storage?.refFromURL(userDetails!.profilePicture);
       await snap?.delete();
       userDetails?.profilePicture = '';
     }

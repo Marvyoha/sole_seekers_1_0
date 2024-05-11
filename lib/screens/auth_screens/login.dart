@@ -24,7 +24,6 @@ class Login extends StatelessWidget {
       // Call signIn function from ServicesProvider
       servicesProvider.signIn(
           emailController.text, passwordController.text, context);
-      servicesProvider.getCurrentUserDoc();
     }
 
     return Scaffold(

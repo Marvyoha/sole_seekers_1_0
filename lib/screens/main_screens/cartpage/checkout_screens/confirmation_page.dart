@@ -18,7 +18,7 @@ class ConfirmationPage extends StatelessWidget {
     final servicesProvider =
         Provider.of<ServicesProvider>(context, listen: true);
     PurchaseHistory yourPurchase =
-        servicesProvider.userDetails.purchaseHistory.last;
+        servicesProvider.userDetails!.purchaseHistory.last;
     int total = yourPurchase.grandTotal;
     int delivery = 25;
     int subtotal = total - delivery;

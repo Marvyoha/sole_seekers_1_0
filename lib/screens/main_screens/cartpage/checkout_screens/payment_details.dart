@@ -51,45 +51,27 @@ class _CardDetailsState extends State<CardDetails> {
     }
 
     uploadPurchaseHistory() {
-      if (cardNumberController.text.length < 19 ||
-          expiryDateController.text.length < 5 ||
-          cvvController.text.length < 3) {
-        servicesProvider.loader = false;
-        return ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Colors.red,
-            content: Center(
-              child: Text(
-                'Filled detail(s) is badly formatted.',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ),
-        );
-      }
-
       Future.delayed(const Duration(seconds: 3), () {
         Location location =
             Location(address: widget.address, city: widget.city);
         PurchaseHistory purchased = PurchaseHistory(
           nameOfRecipient: widget.nameOfReceipient,
-          orderedItems: servicesProvider.userDetails.cart,
+          orderedItems: servicesProvider.userDetails!.cart,
           phoneNumber: widget.phoneNumber,
           grandTotal: grandTotal,
           timeOrdered: formatDateTime(DateTime.now()),
           location: location,
         );
 
-        servicesProvider.userDetails.purchaseHistory.add(purchased);
-        servicesProvider.userDetails.cart = [];
+        servicesProvider.userDetails!.purchaseHistory.add(purchased);
+        servicesProvider.userDetails!.cart = [];
         servicesProvider.updateUserDetails();
         servicesProvider.loader = false;
         Navigator.pushReplacementNamed(context, 'confirmationPage');
       });
     }
 
-    validationChecker() {
+    cardValidationChecker() {
       servicesProvider.loader = true;
       if (cardNumberController.text.isEmpty ||
           expiryDateController.text.isEmpty ||
@@ -107,9 +89,24 @@ class _CardDetailsState extends State<CardDetails> {
             ),
           ),
         );
-      } else {
-        uploadPurchaseHistory();
+      } else if (cardNumberController.text.length < 19 ||
+          expiryDateController.text.length < 5 ||
+          cvvController.text.length < 3) {
+        servicesProvider.loader = false;
+        return ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.red,
+            content: Center(
+              child: Text(
+                'Filled detail(s) is badly formatted.',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+        );
       }
+      uploadPurchaseHistory();
     }
 
     return Scaffold(
@@ -234,25 +231,31 @@ class _CardDetailsState extends State<CardDetails> {
                       ),
                     )
                   : const SizedBox(),
+
+              GlobalVariables.spaceMedium(),
+              GlobalVariables.spaceMedium(),
+              GlobalVariables.spaceMedium(),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 50.h),
+                color: Theme.of(context).colorScheme.background,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    GlobalVariables.spaceMedium(),
+                    CustomButton(
+                      isLoading: servicesProvider.loader,
+                      text: 'Continue Order - \$$grandTotal',
+                      onTap: () {
+                        isCard == true
+                            ? cardValidationChecker()
+                            : uploadPurchaseHistory();
+                      },
+                    )
+                  ],
+                ),
+              ),
             ],
           ),
-        ),
-      ),
-      bottomSheet: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 50.h),
-        color: Theme.of(context).colorScheme.background,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            GlobalVariables.spaceMedium(),
-            CustomButton(
-              isLoading: servicesProvider.loader,
-              text: 'Continue Order - \$$grandTotal',
-              onTap: () {
-                validationChecker();
-              },
-            )
-          ],
         ),
       ),
     );
