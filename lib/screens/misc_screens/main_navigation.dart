@@ -7,6 +7,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
@@ -14,6 +15,7 @@ import 'package:provider/provider.dart';
 import 'package:sole_seekers_1_0/core/providers/services_provider.dart';
 
 import '../../constant/font_styles.dart';
+import '../../constant/global_variables.dart';
 import '../main_screens/cartpage/cartpage.dart';
 import '../main_screens/homepage/homepage.dart';
 import '../main_screens/settings_page/settingspage.dart';
@@ -132,14 +134,72 @@ class _MainNavState extends State<MainNav> {
   Widget build(BuildContext context) {
     ServicesProvider servicesProvider =
         Provider.of<ServicesProvider>(context, listen: true);
-//   test() {
-//     if (currentIndex == 1 || currentIndex == 2) {
-//  if (servicesProvider.userDetails == null && servicesProvider.catalogs == null){}
-//     }
-//     return pages[currentIndex];
-//   }
+    nullSafetyChecker() {
+      switch (currentIndex) {
+        case 1:
+          if (servicesProvider.userDetails == null ||
+              servicesProvider.catalogs == null) {
+            return Center(
+              child: Column(
+                children: [
+                  GlobalVariables.spaceLarge(context),
+                  const Icon(
+                    CarbonIcons.connection_signal,
+                    size: 90,
+                  ),
+                  GlobalVariables.spaceMedium(),
+                  Text(
+                    'Loading Shopping Cart..',
+                    textAlign: TextAlign.center,
+                    style: WriteStyles.headerMedium(context)
+                        .copyWith(fontWeight: FontWeight.normal),
+                  ),
+                  GlobalVariables.spaceMedium(),
+                  CircularProgressIndicator(
+                    color: Theme.of(context).colorScheme.primary,
+                  )
+                ],
+              ),
+            );
+          } else {
+            return const CartPage();
+          }
+        case 2:
+          if (servicesProvider.userDetails == null ||
+              servicesProvider.catalogs == null) {
+            return Center(
+              child: Column(
+                children: [
+                  GlobalVariables.spaceLarge(context),
+                  const Icon(
+                    CarbonIcons.connection_signal,
+                    size: 90,
+                  ),
+                  GlobalVariables.spaceMedium(),
+                  Text(
+                    'Loading Wishlist..',
+                    textAlign: TextAlign.center,
+                    style: WriteStyles.headerMedium(context)
+                        .copyWith(fontWeight: FontWeight.normal),
+                  ),
+                  GlobalVariables.spaceMedium(),
+                  CircularProgressIndicator(
+                    color: Theme.of(context).colorScheme.primary,
+                  )
+                ],
+              ),
+            );
+          } else {
+            return const WishListPage();
+          }
+
+        default:
+          return pages[currentIndex];
+      }
+    }
+
     return Scaffold(
-      body: pages[currentIndex],
+      body: nullSafetyChecker(),
       bottomNavigationBar: CurvedNavigationBar(
         height: 60.h,
         index: currentIndex,

@@ -17,6 +17,21 @@ class PurchaseHistoryDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ServicesProvider servicesProvider =
+        Provider.of<ServicesProvider>(context, listen: false);
+    getOrderedItems() {
+      List orderedItems = [];
+      for (Cart item in details.orderedItems) {
+        for (var element in servicesProvider.catalogs!) {
+          if (element['id'] == item.id) {
+            orderedItems.add(element.data() as Map<dynamic, dynamic>);
+          }
+        }
+      }
+      return orderedItems;
+    }
+
+    List orderedItems = getOrderedItems();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -68,12 +83,13 @@ class PurchaseHistoryDetails extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: WriteStyles.headerMedium(context).copyWith(
                             fontSize: 14.sp,
-                            color: Theme.of(context).colorScheme.tertiary),
+                            color: Theme.of(context).colorScheme.secondary),
                       )
                     ],
                   ),
                 ),
               ),
+              GlobalVariables.spaceMedium(),
               // ORDER DETAILS
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,236 +100,150 @@ class PurchaseHistoryDetails extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: WriteStyles.headerMedium(context).copyWith(
                         fontSize: 18.sp,
-                        color: Theme.of(context).colorScheme.secondary),
+                        color: Theme.of(context).colorScheme.primary),
                   ),
                   const Divider(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Order ID',
-                        style: WriteStyles.bodyMedium(context).copyWith(
-                            color: Theme.of(context).colorScheme.primary),
-                      ),
-                      Text(
-                        details.purchaseId,
-                        style: WriteStyles.bodyMedium(context).copyWith(
-                            color: Theme.of(context).colorScheme.tertiary,
-                            fontWeight: FontWeight.bold),
-                      )
-                    ],
-                  ),
+                  OrderDetailsInfo(
+                      infoHeader: 'Order ID', information: details.purchaseId),
                   GlobalVariables.spaceSmall(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Order Date',
-                        style: WriteStyles.bodyMedium(context).copyWith(
-                            color: Theme.of(context).colorScheme.primary),
-                      ),
-                      Text(
-                        details.timeOrdered,
-                        style: WriteStyles.bodyMedium(context).copyWith(
-                            color: Theme.of(context).colorScheme.tertiary,
-                            fontWeight: FontWeight.bold),
-                      )
-                    ],
-                  ),
+                  OrderDetailsInfo(
+                      infoHeader: 'Order Date',
+                      information: details.timeOrdered),
                   GlobalVariables.spaceSmall(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Recipent',
-                        style: WriteStyles.bodyMedium(context).copyWith(
-                            color: Theme.of(context).colorScheme.primary),
-                      ),
-                      Text(
-                        details.nameOfRecipient,
-                        style: WriteStyles.bodyMedium(context).copyWith(
-                            color: Theme.of(context).colorScheme.tertiary,
-                            fontWeight: FontWeight.bold),
-                      )
-                    ],
-                  ),
+                  OrderDetailsInfo(
+                      infoHeader: 'Recipient',
+                      information: details.nameOfRecipient),
                   GlobalVariables.spaceSmall(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Phone Number',
-                        style: WriteStyles.bodyMedium(context).copyWith(
-                            color: Theme.of(context).colorScheme.primary),
-                      ),
-                      Text(
-                        details.phoneNumber.toString(),
-                        style: WriteStyles.bodyMedium(context).copyWith(
-                            color: Theme.of(context).colorScheme.tertiary,
-                            fontWeight: FontWeight.bold),
-                      )
-                    ],
-                  ),
+                  OrderDetailsInfo(
+                      infoHeader: 'Phone Number',
+                      information: details.phoneNumber.toString()),
                   GlobalVariables.spaceSmall(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Grand total',
-                        style: WriteStyles.bodyMedium(context).copyWith(
-                            color: Theme.of(context).colorScheme.primary),
-                      ),
-                      Text(
-                        '\$${details.grandTotal}',
-                        style: WriteStyles.bodyMedium(context).copyWith(
-                            color: Theme.of(context).colorScheme.tertiary,
-                            fontWeight: FontWeight.bold),
-                      )
-                    ],
-                  ),
+                  OrderDetailsInfo(
+                      infoHeader: 'Grand total',
+                      information: '\$${details.grandTotal}'),
                   const Divider(),
                 ],
               ),
-
+              GlobalVariables.spaceMedium(),
               Text(
                 'Ordered Items - ${details.orderedItems.length}',
                 textAlign: TextAlign.center,
                 style: WriteStyles.headerMedium(context).copyWith(
                     fontSize: 18.sp,
-                    color: Theme.of(context).colorScheme.secondary),
+                    color: Theme.of(context).colorScheme.primary),
               ),
-
+              GlobalVariables.spaceSmall(),
               Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   SizedBox(
-                    height: 300,
-                    child: Consumer<ServicesProvider>(
-                      builder: (context, servicesProvider, child) {
-                        getOrderedItems() {
-                          List orderedItems = [];
-                          for (Cart item in details.orderedItems) {
-                            for (var element in servicesProvider.catalogs!) {
-                              if (element['id'] == item.id) {
-                                orderedItems.add(
-                                    element.data() as Map<dynamic, dynamic>);
-                              }
-                            }
-                          }
-                          return orderedItems;
-                        }
+                    height: 90.h * orderedItems.length * 1.2,
+                    child: ListView.builder(
+                      itemCount: orderedItems.length,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (BuildContext context, int index) {
+                        final item = orderedItems[index];
+                        final id = item['id'];
 
-                        List orderedItems = getOrderedItems();
-
-                        return ListView.builder(
-                          itemCount: orderedItems.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            final item = orderedItems[index];
-                            final id = item['id'];
-
-                            return Column(
-                              children: [
-                                Padding(
-                                  padding: GlobalVariables.normPadding,
-                                  child: GestureDetector(
-                                    onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => ProductDetailsPage(
-                                          item: item,
-                                          id: id,
-                                        ),
-                                      ),
-                                    ),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(30),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(30),
-                                            child: Hero(
-                                              tag: 'CatalogItem $id',
-                                              child: CachedNetworkImage(
-                                                key: UniqueKey(),
-                                                placeholder: (context, url) {
-                                                  return Image.asset(
-                                                      GlobalVariables.appIcon);
-                                                },
-                                                imageUrl: item['image'],
-                                                height: 90.h,
-                                                width: 90.w,
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                          ),
-                                          GlobalVariables.spaceSmall(
-                                              isWidth: true),
-                                          Flexible(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  item['name'],
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: WriteStyles.bodySmall(
-                                                          context)
-                                                      .copyWith(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .primary,
-                                                  ),
-                                                ),
-                                                SizedBox(height: 5.h),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        Text('Qty: ',
-                                                            style: WriteStyles
-                                                                .headerSmall(
-                                                                    context)),
-                                                        Text(
-                                                            '${details.orderedItems[index].quantity}',
-                                                            style: WriteStyles
-                                                                .headerSmall(
-                                                                    context)),
-                                                      ],
-                                                    ),
-                                                    Text(
-                                                      ' \$${details.orderedItems[index].total}',
-                                                      style:
-                                                          WriteStyles.bodySmall(
-                                                                  context)
-                                                              .copyWith(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .tertiary,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                        return Column(
+                          children: [
+                            Padding(
+                              padding: GlobalVariables.normPadding,
+                              child: GestureDetector(
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => ProductDetailsPage(
+                                      item: item,
+                                      id: id,
                                     ),
                                   ),
                                 ),
-                                GlobalVariables.spaceSmall(),
-                              ],
-                            );
-                          },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(30),
+                                        child: Hero(
+                                          tag: 'CatalogItem $id',
+                                          child: CachedNetworkImage(
+                                            key: UniqueKey(),
+                                            placeholder: (context, url) {
+                                              return Image.asset(
+                                                  GlobalVariables.appIcon,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .primary);
+                                            },
+                                            imageUrl: item['image'],
+                                            height: 90.h,
+                                            width: 90.w,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      GlobalVariables.spaceSmall(isWidth: true),
+                                      Flexible(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              item['name'],
+                                              overflow: TextOverflow.ellipsis,
+                                              style:
+                                                  WriteStyles.bodySmall(context)
+                                                      .copyWith(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                              ),
+                                            ),
+                                            SizedBox(height: 5.h),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Text('Qty: ',
+                                                        style: WriteStyles
+                                                            .headerSmall(
+                                                                context)),
+                                                    Text(
+                                                        '${details.orderedItems[index].quantity}',
+                                                        style: WriteStyles
+                                                            .headerSmall(
+                                                                context)),
+                                                  ],
+                                                ),
+                                                Text(
+                                                  ' \$${details.orderedItems[index].total}',
+                                                  style: WriteStyles.bodySmall(
+                                                          context)
+                                                      .copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .tertiary,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            GlobalVariables.spaceSmall(),
+                          ],
                         );
                       },
                     ),
@@ -324,6 +254,33 @@ class PurchaseHistoryDetails extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class OrderDetailsInfo extends StatelessWidget {
+  final String infoHeader;
+  final String information;
+  const OrderDetailsInfo(
+      {super.key, required this.infoHeader, required this.information});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          infoHeader,
+          style: WriteStyles.bodyMedium(context)
+              .copyWith(color: Theme.of(context).colorScheme.secondary),
+        ),
+        Text(
+          information,
+          style: WriteStyles.bodyMedium(context).copyWith(
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.bold),
+        )
+      ],
     );
   }
 }

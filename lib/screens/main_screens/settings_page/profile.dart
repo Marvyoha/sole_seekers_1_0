@@ -26,10 +26,12 @@ class _ProfilePageState extends State<ProfilePage> {
         Provider.of<ServicesProvider>(context, listen: true);
 
     Scaffold mainScaffold() {
-      if (servicesProvider.userDetails == null) {
+      if (servicesProvider.userDetails == null ||
+          servicesProvider.user == null) {
         return Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.transparent,
+            leading: const SizedBox(),
           ),
           body: Center(
             child: Column(
