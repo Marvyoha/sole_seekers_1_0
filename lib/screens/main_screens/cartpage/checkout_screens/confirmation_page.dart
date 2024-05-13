@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:sole_seekers_1_0/constant/widgets/custom_button.dart';
 import 'package:sole_seekers_1_0/core/models/user_info.dart';
+import 'package:sole_seekers_1_0/screens/misc_screens/purchase_history_details.dart';
 
 import '../../../../constant/font_styles.dart';
 import '../../../../constant/global_variables.dart';
@@ -110,9 +111,16 @@ class ConfirmationPage extends StatelessWidget {
             ),
             GlobalVariables.spaceMedium(),
             CustomButton(
-              text: 'Order Details',
-              onTap: () {},
-            ),
+                text: 'Order Details',
+                onTap: () {
+                  Navigator.pushReplacementNamed(context, 'mainNav');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => PurchaseHistoryDetails(
+                            isFromConfirmPage: true, details: yourPurchase)),
+                  );
+                }),
             GlobalVariables.spaceMedium(),
             GlobalVariables.spaceMedium(),
             Flexible(

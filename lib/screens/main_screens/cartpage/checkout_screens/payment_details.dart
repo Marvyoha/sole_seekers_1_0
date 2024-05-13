@@ -1,7 +1,11 @@
 // ignore_for_file: must_be_immutable
 
+import 'dart:math';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:sole_seekers_1_0/core/models/user_info.dart';
@@ -41,6 +45,18 @@ class _CardDetailsState extends State<CardDetails> {
         Provider.of<ServicesProvider>(context, listen: true);
     int grandTotal = servicesProvider.getSubTotal() + 25;
 
+    String generateTransactionId() {
+      final random = Random();
+      const chars =
+          'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      const idLength = 16;
+
+      return String.fromCharCodes(Iterable.generate(
+        idLength,
+        (_) => chars.codeUnitAt(random.nextInt(chars.length)),
+      ));
+    }
+
     String formatDateTime(DateTime dateTime) {
       String formattedDate =
           '${dateTime.day}/${dateTime.month}/${dateTime.year}';
@@ -56,6 +72,7 @@ class _CardDetailsState extends State<CardDetails> {
             Location(address: widget.address, city: widget.city);
         PurchaseHistory purchased = PurchaseHistory(
           nameOfRecipient: widget.nameOfReceipient,
+          purchaseId: generateTransactionId(),
           orderedItems: servicesProvider.userDetails!.cart,
           phoneNumber: widget.phoneNumber,
           grandTotal: grandTotal,
@@ -67,7 +84,8 @@ class _CardDetailsState extends State<CardDetails> {
         servicesProvider.userDetails!.cart = [];
         servicesProvider.updateUserDetails();
         servicesProvider.loader = false;
-        Navigator.pushReplacementNamed(context, 'confirmationPage');
+        Navigator.pushReplacementNamed(context, 'mainNav');
+        Navigator.pushNamed(context, 'confirmationPage');
       });
     }
 
@@ -231,27 +249,30 @@ class _CardDetailsState extends State<CardDetails> {
                       ),
                     )
                   : const SizedBox(),
-
-              GlobalVariables.spaceMedium(),
+              GlobalVariables.spaceLarge(context),
+              isCard == false
+                  ? GlobalVariables.spaceLarge(context)
+                  : const SizedBox(),
+              isCard == false
+                  ? GlobalVariables.spaceLarge(context)
+                  : const SizedBox(),
+              isCard == false
+                  ? GlobalVariables.spaceMedium()
+                  : const SizedBox(),
+              isCard == false ? GlobalVariables.spaceSmall() : const SizedBox(),
               GlobalVariables.spaceMedium(),
               GlobalVariables.spaceMedium(),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 50.h),
                 color: Theme.of(context).colorScheme.background,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    GlobalVariables.spaceMedium(),
-                    CustomButton(
-                      isLoading: servicesProvider.loader,
-                      text: 'Continue Order - \$$grandTotal',
-                      onTap: () {
-                        isCard == true
-                            ? cardValidationChecker()
-                            : uploadPurchaseHistory();
-                      },
-                    )
-                  ],
+                child: CustomButton(
+                  isLoading: servicesProvider.loader,
+                  text: 'Continue Order - \$$grandTotal',
+                  onTap: () {
+                    isCard == true
+                        ? cardValidationChecker()
+                        : uploadPurchaseHistory();
+                  },
                 ),
               ),
             ],

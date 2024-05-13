@@ -33,7 +33,7 @@ class _WishListPageState extends State<WishListPage> {
                   ),
                   GlobalVariables.spaceMedium(),
                   Text(
-                    'Loading Wish List...',
+                    'Loading Wishlist..',
                     textAlign: TextAlign.center,
                     style: WriteStyles.headerMedium(context)
                         .copyWith(fontWeight: FontWeight.normal),
@@ -46,8 +46,7 @@ class _WishListPageState extends State<WishListPage> {
               ),
             );
           }
-          List<Map>? wishlistArray = servicesProvider.getWishlist();
-
+          List<Map> wishlistArray = servicesProvider.getWishlist();
           bool isEmpty = servicesProvider.userDetails!.wishlist.isEmpty;
           return isEmpty
               ? Center(

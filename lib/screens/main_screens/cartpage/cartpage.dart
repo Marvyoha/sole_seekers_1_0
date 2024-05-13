@@ -37,7 +37,7 @@ class _CartPageState extends State<CartPage> {
                   ),
                   GlobalVariables.spaceMedium(),
                   Text(
-                    'Loading Cart List',
+                    'Loading Shopping Cart..',
                     textAlign: TextAlign.center,
                     style: WriteStyles.headerMedium(context)
                         .copyWith(fontWeight: FontWeight.normal),

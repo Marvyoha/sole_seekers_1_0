@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:provider/provider.dart';
 import 'package:sole_seekers_1_0/core/providers/services_provider.dart';
 
 import '../../constant/font_styles.dart';
@@ -129,6 +130,14 @@ class _MainNavState extends State<MainNav> {
 
   @override
   Widget build(BuildContext context) {
+    ServicesProvider servicesProvider =
+        Provider.of<ServicesProvider>(context, listen: true);
+//   test() {
+//     if (currentIndex == 1 || currentIndex == 2) {
+//  if (servicesProvider.userDetails == null && servicesProvider.catalogs == null){}
+//     }
+//     return pages[currentIndex];
+//   }
     return Scaffold(
       body: pages[currentIndex],
       bottomNavigationBar: CurvedNavigationBar(

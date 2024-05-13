@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:image_picker/image_picker.dart';
@@ -87,9 +88,26 @@ class ServicesProvider extends ChangeNotifier {
       // To check if the user is valid
       auth?.authStateChanges().listen((user) {
         if (user != null) {
-          // Navigate to home
-          Navigator.pushNamedAndRemoveUntil(
-              context, 'mainApp', (route) => false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              content: Center(
+                child: Text(
+                  'Configuring please re-launch the app ',
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.background),
+                ),
+              ),
+            ),
+          );
+
+          Future.delayed(const Duration(seconds: 3), () {
+            SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+          });
+          // // Navigate to home
+          // Navigator.pushNamedAndRemoveUntil(
+          //     context, 'mainApp', (route) => false);
         }
       });
       notifyListeners();

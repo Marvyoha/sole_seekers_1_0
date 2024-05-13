@@ -31,7 +31,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   @override
   void initState() {
     total = widget.item['price'];
-
     super.initState();
   }
 
@@ -44,168 +43,236 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final servicesProvider =
-        Provider.of<ServicesProvider>(context, listen: true);
-    bool wishListChecker() {
-      bool checker;
-      List wishlist = servicesProvider.userDetails!.wishlist;
-      if (wishlist.contains(widget.item['id'])) {
-        checker = true;
-      } else {
-        checker = false;
-      }
+    // final servicesProvider =
+    //     Provider.of<ServicesProvider>(context, listen: true);
 
-      return checker;
-    }
+    Widget mainBody() {
+      return Consumer<ServicesProvider>(
+        builder: (context, servicesProvider, child) {
+          if (servicesProvider.userDetails == null) {
+            return Center(
+              child: Column(
+                children: [
+                  GlobalVariables.spaceLarge(context),
+                  const Icon(
+                    CarbonIcons.connection_signal,
+                    size: 90,
+                  ),
+                  GlobalVariables.spaceMedium(),
+                  Text(
+                    'Loading Product Details..',
+                    textAlign: TextAlign.center,
+                    style: WriteStyles.headerMedium(context)
+                        .copyWith(fontWeight: FontWeight.normal),
+                  ),
+                  GlobalVariables.spaceMedium(),
+                  CircularProgressIndicator(
+                    color: Theme.of(context).colorScheme.primary,
+                  )
+                ],
+              ),
+            );
+          }
+          bool wishListChecker() {
+            bool checker;
+            List wishlist = servicesProvider.userDetails!.wishlist;
+            if (wishlist.contains(widget.item['id'])) {
+              checker = true;
+            } else {
+              checker = false;
+            }
 
-    bool cartChecker() {
-      List cart = servicesProvider.userDetails!.cart;
-      for (Cart element in cart) {
-        if (element.id == widget.item['id']) {
-          return true;
-        }
-      }
-      return false;
-    }
+            return checker;
+          }
 
-    bool isWishlist = wishListChecker();
-    bool isCart = cartChecker();
+          bool cartChecker() {
+            List cart = servicesProvider.userDetails!.cart;
+            for (Cart element in cart) {
+              if (element.id == widget.item['id']) {
+                return true;
+              }
+            }
+            return false;
+          }
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        centerTitle: true,
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: GlobalVariables.normPadding,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.background,
-            ),
-            child: SingleChildScrollView(
-                child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Stack(
-                  alignment: Alignment.topRight,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(50),
-                      child: Hero(
-                        tag: 'CatalogItem ${widget.id}',
-                        child: CachedNetworkImage(
-                          key: UniqueKey(),
-                          placeholder: (context, url) {
-                            return Image.asset(
-                              GlobalVariables.appIcon,
-                              color: Theme.of(context).colorScheme.primary,
-                            );
-                          },
-                          imageUrl: widget.item['image'],
-                          width: 343.w,
-                          height: 286.h,
-                          fit: BoxFit.cover,
+          bool isWishlist = wishListChecker();
+          bool isCart = cartChecker();
+          return Padding(
+            padding: GlobalVariables.normPadding,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.background,
+              ),
+              child: SingleChildScrollView(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Stack(
+                    alignment: Alignment.topRight,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(50),
+                        child: Hero(
+                          tag: 'CatalogItem ${widget.id}',
+                          child: CachedNetworkImage(
+                            key: UniqueKey(),
+                            placeholder: (context, url) {
+                              return Image.asset(
+                                GlobalVariables.appIcon,
+                                color: Theme.of(context).colorScheme.primary,
+                              );
+                            },
+                            imageUrl: widget.item['image'],
+                            width: 343.w,
+                            height: 286.h,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
-                    ),
-                    // WISH LIST BUTTON
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10, right: 20),
-                      child: IconButton(
-                          onPressed: () {
-                            isWishlist == false
-                                ? servicesProvider.addToWishlist(id: widget.id)
-                                : servicesProvider.removeFromWishlist(
-                                    id: widget.id);
+                      // WISH LIST BUTTON
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10, right: 20),
+                        child: IconButton(
+                            onPressed: () {
+                              isWishlist == false
+                                  ? servicesProvider.addToWishlist(
+                                      id: widget.id)
+                                  : servicesProvider.removeFromWishlist(
+                                      id: widget.id);
 
-                            setState(() {
-                              isWishlist = !isWishlist;
-                            });
-                          },
-                          icon: Icon(
-                            isWishlist
-                                ? CarbonIcons.star_filled
-                                : CarbonIcons.star,
-                            size: 40,
-                            color: Theme.of(context).colorScheme.surface,
-                          )),
-                    )
-                  ],
-                ),
-                GlobalVariables.spaceMedium(),
-                Text(
-                  widget.item['name'],
-                  style: WriteStyles.headerMedium(context),
-                ),
-                Text(
-                  widget.item['brand'].toString().toUpperCase(),
-                  style: WriteStyles.headerSmall(context).copyWith(
-                      fontSize: 15.sp,
-                      color: Theme.of(context).colorScheme.secondary),
-                ),
+                              setState(() {
+                                isWishlist = !isWishlist;
+                              });
+                            },
+                            icon: Icon(
+                              isWishlist
+                                  ? CarbonIcons.star_filled
+                                  : CarbonIcons.star,
+                              size: 40,
+                              color: Theme.of(context).colorScheme.surface,
+                            )),
+                      )
+                    ],
+                  ),
+                  GlobalVariables.spaceMedium(),
+                  Text(
+                    widget.item['name'],
+                    style: WriteStyles.headerMedium(context),
+                  ),
+                  Text(
+                    widget.item['brand'].toString().toUpperCase(),
+                    style: WriteStyles.headerSmall(context).copyWith(
+                        fontSize: 15.sp,
+                        color: Theme.of(context).colorScheme.secondary),
+                  ),
 
-                GlobalVariables.spaceSmaller(),
-                Text('\$${total.toString()}',
-                    style: WriteStyles.headerMedium(context).copyWith(
-                        color: Theme.of(context).colorScheme.tertiary)),
-                GlobalVariables.spaceSmall(),
-                // QUANTITY PICKER
-                Row(
-                  children: [
-                    isCart
-                        ? GlobalVariables.spaceSmaller(isWidth: true)
-                        : Text('Quantity',
-                            style: WriteStyles.headerSmall(context).copyWith(
-                                color: Theme.of(context).colorScheme.primary)),
-                    isCart
-                        ? const SizedBox()
-                        : Row(
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    quantity--;
-                                    quantityHandler();
-                                    if (total != widget.item['price']) {
+                  GlobalVariables.spaceSmaller(),
+                  Text('\$${total.toString()}',
+                      style: WriteStyles.headerMedium(context).copyWith(
+                          color: Theme.of(context).colorScheme.tertiary)),
+                  GlobalVariables.spaceSmall(),
+                  // QUANTITY PICKER
+                  Row(
+                    children: [
+                      isCart
+                          ? GlobalVariables.spaceSmaller(isWidth: true)
+                          : Text('Quantity',
+                              style: WriteStyles.headerSmall(context).copyWith(
+                                  color:
+                                      Theme.of(context).colorScheme.primary)),
+                      isCart
+                          ? const SizedBox()
+                          : Row(
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      quantity--;
+                                      quantityHandler();
+                                      if (total != widget.item['price']) {
+                                        total =
+                                            total - widget.item['price'] as int;
+                                      }
+                                      debugPrint('$quantity');
+                                    });
+                                  },
+                                  icon: const Icon(CarbonIcons.subtract_alt),
+                                ),
+                                Text('${quantityHandler()}',
+                                    style: WriteStyles.headerSmall(context)),
+                                IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      quantity++;
+                                      quantityHandler();
                                       total =
-                                          total - widget.item['price'] as int;
-                                    }
-                                    debugPrint('$quantity');
-                                  });
-                                },
-                                icon: const Icon(CarbonIcons.subtract_alt),
-                              ),
-                              Text('${quantityHandler()}',
-                                  style: WriteStyles.headerSmall(context)),
-                              IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    quantity++;
-                                    quantityHandler();
-                                    total = total + widget.item['price'] as int;
-                                    debugPrint('$quantity');
-                                  });
-                                },
-                                icon: const Icon(CarbonIcons.add_alt),
-                              ),
-                            ],
-                          ),
-                    GlobalVariables.spaceSmall(isWidth: true),
-                    // ADD TO CART BUTTON
-                    isCart
-                        ? Column(
-                            children: [
-                              Container(
+                                          total + widget.item['price'] as int;
+                                      debugPrint('$quantity');
+                                    });
+                                  },
+                                  icon: const Icon(CarbonIcons.add_alt),
+                                ),
+                              ],
+                            ),
+                      GlobalVariables.spaceSmall(isWidth: true),
+                      // ADD TO CART BUTTON
+                      isCart
+                          ? Column(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      borderRadius: BorderRadius.circular(10)),
+                                  height: isCart ? 50.h : 40.h,
+                                  width: isCart ? 260.w : 140.w,
+                                  child: Center(
+                                    child: Text(
+                                      'Added to Cart',
+                                      style: WriteStyles.bodyMedium(context)
+                                          .copyWith(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .background),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : GestureDetector(
+                              onTap: () {
+                                Cart addItemtoCart = Cart(
+                                    id: widget.id,
+                                    quantity: quantity,
+                                    total: total);
+
+                                servicesProvider.addToCart(
+                                    cartDetails: addItemtoCart);
+
+                                // ScaffoldMessenger.of(context).showSnackBar(
+                                //   SnackBar(
+                                //     duration: const Duration(milliseconds: 1270),
+                                //     content: Center(
+                                //       child: Text('Shoes added to cart',
+                                //           style: WriteStyles.bodyMedium(context)
+                                //               .copyWith(
+                                //                   color: Theme.of(context)
+                                //                       .colorScheme
+                                //                       .background)),
+                                //     ),
+                                //   ),
+                                // );
+                              },
+                              child: Container(
                                 decoration: BoxDecoration(
                                     color:
                                         Theme.of(context).colorScheme.primary,
                                     borderRadius: BorderRadius.circular(10)),
-                                height: isCart ? 50.h : 40.h,
-                                width: isCart ? 260.w : 140.w,
+                                height: 40.h,
+                                width: 140.w,
                                 child: Center(
                                   child: Text(
-                                    'Added to Cart',
+                                    'Add to Cart',
                                     style: WriteStyles.bodyMedium(context)
                                         .copyWith(
                                             color: Theme.of(context)
@@ -214,61 +281,26 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   ),
                                 ),
                               ),
-                            ],
-                          )
-                        : GestureDetector(
-                            onTap: () {
-                              Cart addItemtoCart = Cart(
-                                  id: widget.id,
-                                  quantity: quantity,
-                                  total: total);
-
-                              servicesProvider.addToCart(
-                                  cartDetails: addItemtoCart);
-
-                              // ScaffoldMessenger.of(context).showSnackBar(
-                              //   SnackBar(
-                              //     duration: const Duration(milliseconds: 1270),
-                              //     content: Center(
-                              //       child: Text('Shoes added to cart',
-                              //           style: WriteStyles.bodyMedium(context)
-                              //               .copyWith(
-                              //                   color: Theme.of(context)
-                              //                       .colorScheme
-                              //                       .background)),
-                              //     ),
-                              //   ),
-                              // );
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  borderRadius: BorderRadius.circular(10)),
-                              height: 40.h,
-                              width: 140.w,
-                              child: Center(
-                                child: Text(
-                                  'Add to Cart',
-                                  style: WriteStyles.bodyMedium(context)
-                                      .copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .background),
-                                ),
-                              ),
                             ),
-                          ),
-                  ],
-                ),
-                GlobalVariables.spaceSmall(),
-                Text(widget.item['description'],
-                    style: WriteStyles.bodyMedium(context).copyWith(
-                        color: Theme.of(context).colorScheme.primary)),
-              ],
-            )),
-          ),
+                    ],
+                  ),
+                  GlobalVariables.spaceSmall(),
+                  Text(widget.item['description'],
+                      style: WriteStyles.bodyMedium(context).copyWith(
+                          color: Theme.of(context).colorScheme.primary)),
+                ],
+              )),
+            ),
+          );
+        },
+      );
+    }
+
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          centerTitle: true,
         ),
-      ),
-    );
+        body: mainBody());
   }
 }

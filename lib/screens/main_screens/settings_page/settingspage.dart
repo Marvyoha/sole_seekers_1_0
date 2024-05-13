@@ -124,7 +124,7 @@ class SettingsPage extends StatelessWidget {
             ),
             MoreTile(
               icon: CarbonIcons.money,
-              onTap: () {},
+              onTap: () => Navigator.pushNamed(context, 'purchaseHistoryPage'),
               text: 'Purchase History',
             ),
             MoreTile(

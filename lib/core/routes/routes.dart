@@ -9,11 +9,11 @@ import '../../screens/auth_screens/forgot_password.dart';
 import '../../screens/auth_screens/google_signup.dart';
 import '../../screens/auth_screens/login.dart';
 import '../../screens/auth_screens/signup.dart';
-import '../../screens/main_screens/cartpage/checkout_screens/payment_details.dart';
 import '../../screens/main_screens/cartpage/checkout_screens/confirmation_page.dart';
 import '../../screens/main_screens/cartpage/checkout_screens/personal_details.dart';
 import '../../screens/main_screens/homepage/homepage.dart';
 import '../../screens/main_screens/settings_page/profile.dart';
+import '../../screens/main_screens/settings_page/purchase_history_page.dart';
 import '../../screens/misc_screens/main_navigation.dart';
 import '../../screens/main_screens/homepage/widgets/searchpage.dart';
 import '../../screens/misc_screens/on_boarding.dart';
@@ -43,6 +43,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const MainNav());
       case 'profilePage':
         return MaterialPageRoute(builder: (_) => const ProfilePage());
+      case 'purchaseHistoryPage':
+        return MaterialPageRoute(builder: (_) => const PurchaseHistoryPage());
       case 'personalDetails':
         return MaterialPageRoute(builder: (_) => const PersonalDetails());
       case 'confirmationPage':

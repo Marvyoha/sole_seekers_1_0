@@ -79,6 +79,7 @@ class Cart {
 
 class PurchaseHistory {
   String nameOfRecipient;
+  String purchaseId;
   List<Cart> orderedItems;
   int phoneNumber;
   int grandTotal;
@@ -87,6 +88,7 @@ class PurchaseHistory {
 
   PurchaseHistory({
     required this.nameOfRecipient,
+    required this.purchaseId,
     required this.orderedItems,
     required this.phoneNumber,
     required this.grandTotal,
@@ -96,6 +98,7 @@ class PurchaseHistory {
 
   PurchaseHistory.fromJson(Map<String, dynamic> json)
       : nameOfRecipient = json['nameOfRecipient'],
+        purchaseId = json['purchaseId'],
         orderedItems = json['orderedItems'] != null
             ? List<Cart>.from(json['orderedItems'].map((x) => Cart.fromJson(x)))
             : [],
@@ -109,6 +112,7 @@ class PurchaseHistory {
   Map<String, dynamic> toJson() {
     return {
       'nameOfRecipient': nameOfRecipient,
+      'purchaseId': purchaseId,
       'orderedItems': orderedItems.map((x) => x.toJson()).toList(),
       'phoneNumber': phoneNumber,
       'grandTotal': grandTotal,
