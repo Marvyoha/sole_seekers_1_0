@@ -25,6 +25,7 @@ deleteAccountDialog(BuildContext context, ServicesProvider provider) {
                 isLoading: provider.loader,
                 onTap: () async {
                   await provider.deleteUser(context, passwordController.text);
+                  // ignore: use_build_context_synchronously
                   Navigator.pushNamed(context, 'onBoarding');
                 }),
             TextButton(

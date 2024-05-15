@@ -2,10 +2,8 @@
 
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:sole_seekers_1_0/core/models/user_info.dart';
@@ -90,7 +88,6 @@ class _CardDetailsState extends State<CardDetails> {
     }
 
     cardValidationChecker() {
-      servicesProvider.loader = true;
       if (cardNumberController.text.isEmpty ||
           expiryDateController.text.isEmpty ||
           cvvController.text.isEmpty) {
@@ -99,6 +96,7 @@ class _CardDetailsState extends State<CardDetails> {
           const SnackBar(
             behavior: SnackBarBehavior.floating,
             backgroundColor: Colors.red,
+            duration: Duration(seconds: 2),
             content: Center(
               child: Text(
                 'Fill All Criterias.',
@@ -115,6 +113,7 @@ class _CardDetailsState extends State<CardDetails> {
           const SnackBar(
             behavior: SnackBarBehavior.floating,
             backgroundColor: Colors.red,
+            duration: Duration(seconds: 2),
             content: Center(
               child: Text(
                 'Filled detail(s) is badly formatted.',
@@ -269,9 +268,14 @@ class _CardDetailsState extends State<CardDetails> {
                   isLoading: servicesProvider.loader,
                   text: 'Continue Order - \$$grandTotal',
                   onTap: () {
-                    isCard == true
-                        ? cardValidationChecker()
-                        : uploadPurchaseHistory();
+                    servicesProvider.loader = true;
+                    Future.delayed(const Duration(milliseconds: 600), () {
+                      if (isCard) {
+                        cardValidationChecker();
+                      } else {
+                        uploadPurchaseHistory();
+                      }
+                    });
                   },
                 ),
               ),

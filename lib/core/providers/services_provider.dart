@@ -1,11 +1,9 @@
 // ignore_for_file: use_build_context_synchronously, unnecessary_getters_setters
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:image_picker/image_picker.dart';
@@ -53,6 +51,7 @@ class ServicesProvider extends ChangeNotifier {
 
   set loader(bool newLoader) {
     _loader = newLoader;
+    notifyListeners();
   }
 
   set imageFile(File? newImageFile) {
@@ -61,10 +60,12 @@ class ServicesProvider extends ChangeNotifier {
 
   set catalogs(List<QueryDocumentSnapshot>? newCatalogs) {
     _catalogs = newCatalogs;
+    notifyListeners();
   }
 
   set userDetails(UserDetails? newUserDetails) {
     _userDetails = newUserDetails;
+    notifyListeners();
   }
 
   initialiseData() async {
@@ -72,6 +73,8 @@ class ServicesProvider extends ChangeNotifier {
       await getCurrentUserDoc();
       await loadData();
       _isInitialised = true;
+      debugPrint('INITIALISED DATA STATUS: DONE.');
+      notifyListeners();
     } catch (e) {
       debugPrint('Error Initialising Data: $e');
     }
@@ -86,28 +89,29 @@ class ServicesProvider extends ChangeNotifier {
       await _auth.signInWithEmailAndPassword(
           email: email.trim(), password: password.trim());
       // To check if the user is valid
-      auth?.authStateChanges().listen((user) {
+      auth?.authStateChanges().listen((user) async {
         if (user != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               behavior: SnackBarBehavior.floating,
               backgroundColor: Theme.of(context).colorScheme.primary,
+              duration: const Duration(seconds: 2),
               content: Center(
                 child: Text(
-                  'Configuring please re-launch the app ',
+                  'Sign in successful ',
                   style: TextStyle(
                       color: Theme.of(context).colorScheme.background),
                 ),
               ),
             ),
           );
+          await initialiseData();
+          Future.delayed(const Duration(seconds: 2), () {
+            Navigator.pushReplacementNamed(context, 'mainNav');
 
-          Future.delayed(const Duration(seconds: 3), () {
-            SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+            // SystemChannels.platform.invokeMethod('SystemNavigator.pop');
           });
           // // Navigate to home
-          // Navigator.pushNamedAndRemoveUntil(
-          //     context, 'mainApp', (route) => false);
         }
       });
       notifyListeners();
@@ -280,6 +284,7 @@ class ServicesProvider extends ChangeNotifier {
   }
 
   Future<void> signOut(BuildContext context) async {
+    // ignore: await_only_futures
     bool isGoogle = await isUserSignedInWithGoogle();
     if (isGoogle == true) {
       await GoogleSignIn().signOut();
@@ -292,7 +297,7 @@ class ServicesProvider extends ChangeNotifier {
     locale.delete('catalogs');
     docId = '';
 
-    Future.delayed(const Duration(milliseconds: 1700), () {
+    Future.delayed(const Duration(milliseconds: 1000), () {
       Navigator.pushNamedAndRemoveUntil(context, 'login', (route) => false);
     });
     notifyListeners();

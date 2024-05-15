@@ -50,6 +50,7 @@ class SettingsPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         centerTitle: true,
+        leading: const SizedBox(),
         title: Text(
           '',
           style: WriteStyles.headerMedium(context)
@@ -67,19 +68,25 @@ class SettingsPage extends StatelessWidget {
                   child: profilePic(),
                 ),
                 GlobalVariables.spaceSmall(isWidth: true),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      servicesProvider.user?.displayName ?? 'Pleibian',
-                      style: WriteStyles.headerMedium(context),
-                    ),
-                    Text(
-                      servicesProvider.user!.email as String,
-                      style: WriteStyles.headerSmall(context),
-                    )
-                  ],
-                )
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        servicesProvider.user?.displayName ?? 'Pleibian',
+                        style: WriteStyles.headerMedium(context),
+                        overflow: TextOverflow.fade,
+                        softWrap: false,
+                      ),
+                      Text(
+                        servicesProvider.user!.email as String,
+                        overflow: TextOverflow.fade,
+                        softWrap: false,
+                        style: WriteStyles.headerSmall(context),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
             GlobalVariables.spaceSmall(),
