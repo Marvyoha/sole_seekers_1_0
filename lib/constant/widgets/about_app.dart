@@ -55,7 +55,7 @@ class AboutApp extends StatelessWidget {
               const InfoHeader(text: 'The Journey of SoleSeekers'),
               const InfoBody(
                   text:
-                      '''SoleSeekers represents the culmination of our hard work, dedication, and passion for mobile app development and e-commerce. Throughout the development process, I faced numerous challenges, from implementing complex algorithms to optimizing performance across different devices. However, my commitment to excellence and my love for Flutter helped us overcome these obstacles, resulting in a truly remarkable final year project.'''),
+                      '''SoleSeekers represents the culmination of my hard work, dedication, and passion for mobile app development and e-commerce. Throughout the development process, I faced numerous challenges, from implementing complex algorithms to optimizing performance across different devices. However, my commitment to excellence and my love for Flutter helped us overcome these obstacles, resulting in a truly remarkable final year project.'''),
             ],
           ),
         ),

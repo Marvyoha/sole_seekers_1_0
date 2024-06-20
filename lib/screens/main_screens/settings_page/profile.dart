@@ -158,104 +158,102 @@ class _ProfilePageState extends State<ProfilePage> {
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30),
           child: SingleChildScrollView(
-            child: Expanded(
-              child: Column(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      imageDialog(context, servicesProvider);
+            child: Column(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    imageDialog(context, servicesProvider);
+                  },
+                  child: Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(90),
+                        child: profilePic(),
+                      ),
+                      const Icon(
+                        Icons.camera_alt,
+                        size: 27,
+                      )
+                    ],
+                  ),
+                ),
+                GlobalVariables.spaceSmall(),
+                Text(
+                  servicesProvider.user?.displayName ?? 'Pleibian',
+                  overflow: TextOverflow.fade,
+                  softWrap: false,
+                  style: WriteStyles.headerMedium(context),
+                ),
+                Text(
+                  servicesProvider.userDetails!.email,
+                  overflow: TextOverflow.fade,
+                  softWrap: false,
+                  style: WriteStyles.headerSmall(context),
+                ),
+                GlobalVariables.spaceSmall(),
+                GlobalVariables.spaceMedium(),
+                ProfileInfo(
+                  title: 'Username',
+                  content: servicesProvider.user?.displayName ?? 'Pleibian',
+                  icon: Icons.edit,
+                  onTap: () {
+                    editUsernameDialog(context, servicesProvider);
+                  },
+                ),
+                GlobalVariables.spaceMedium(),
+                ProfileInfo(
+                  title: 'E-Mail',
+                  content: servicesProvider.user?.email as String,
+                ),
+                GlobalVariables.spaceMedium(),
+                IconButton(
+                    onPressed: () {
+                      servicesProvider.signOut(context);
                     },
-                    child: Stack(
-                      alignment: Alignment.bottomRight,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(90),
-                          child: profilePic(),
-                        ),
-                        const Icon(
-                          Icons.camera_alt,
-                          size: 27,
-                        )
-                      ],
-                    ),
-                  ),
-                  GlobalVariables.spaceSmall(),
-                  Text(
-                    servicesProvider.user?.displayName ?? 'Pleibian',
-                    overflow: TextOverflow.fade,
-                    softWrap: false,
-                    style: WriteStyles.headerMedium(context),
-                  ),
-                  Text(
-                    servicesProvider.userDetails!.email,
-                    overflow: TextOverflow.fade,
-                    softWrap: false,
-                    style: WriteStyles.headerSmall(context),
-                  ),
-                  GlobalVariables.spaceSmall(),
-                  GlobalVariables.spaceMedium(),
-                  ProfileInfo(
-                    title: 'Username',
-                    content: servicesProvider.user?.displayName ?? 'Pleibian',
-                    icon: Icons.edit,
-                    onTap: () {
-                      editUsernameDialog(context, servicesProvider);
+                    icon: SizedBox(
+                      height: 30.h,
+                      width: 100.w,
+                      child: Row(
+                        children: [
+                          Text(
+                            'Sign Out',
+                            style: WriteStyles.headerSmall(context)
+                                .copyWith(color: Colors.red),
+                          ),
+                          GlobalVariables.spaceSmaller(isWidth: true),
+                          const Icon(CarbonIcons.login)
+                        ],
+                      ),
+                    )),
+                IconButton(
+                    onPressed: () async {
+                      if (isGoogleAccount == true) {
+                        await servicesProvider.googleDeleteUser(context);
+                        // ignore: use_build_context_synchronously
+                        Navigator.pushNamed(context, 'onBoarding');
+                      } else {
+                        deleteAccountDialog(context, servicesProvider);
+                      }
                     },
-                  ),
-                  GlobalVariables.spaceMedium(),
-                  ProfileInfo(
-                    title: 'E-Mail',
-                    content: servicesProvider.user?.email as String,
-                  ),
-                  GlobalVariables.spaceMedium(),
-                  IconButton(
-                      onPressed: () {
-                        servicesProvider.signOut(context);
-                      },
-                      icon: SizedBox(
-                        height: 30.h,
-                        width: 100.w,
-                        child: Row(
-                          children: [
-                            Text(
-                              'Sign Out',
-                              style: WriteStyles.headerSmall(context)
-                                  .copyWith(color: Colors.red),
-                            ),
-                            GlobalVariables.spaceSmaller(isWidth: true),
-                            const Icon(CarbonIcons.login)
-                          ],
-                        ),
-                      )),
-                  IconButton(
-                      onPressed: () async {
-                        if (isGoogleAccount == true) {
-                          await servicesProvider.googleDeleteUser(context);
-                          // ignore: use_build_context_synchronously
-                          Navigator.pushNamed(context, 'onBoarding');
-                        } else {
-                          deleteAccountDialog(context, servicesProvider);
-                        }
-                      },
-                      icon: SizedBox(
-                        height: 30.h,
-                        width: 160.w,
-                        child: Row(
-                          children: [
-                            Text(
-                              'Delete Account',
-                              style: WriteStyles.headerSmall(context)
-                                  .copyWith(color: Colors.red),
-                            ),
-                            GlobalVariables.spaceSmaller(isWidth: true),
-                            const Icon(
-                              CarbonIcons.delete,
-                            )
-                          ],
-                        ),
-                      ))
-                ],
-              ),
+                    icon: SizedBox(
+                      height: 30.h,
+                      width: 160.w,
+                      child: Row(
+                        children: [
+                          Text(
+                            'Delete Account',
+                            style: WriteStyles.headerSmall(context)
+                                .copyWith(color: Colors.red),
+                          ),
+                          GlobalVariables.spaceSmaller(isWidth: true),
+                          const Icon(
+                            CarbonIcons.delete,
+                          )
+                        ],
+                      ),
+                    ))
+              ],
             ),
           ),
         ),
