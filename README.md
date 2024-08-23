@@ -1,15 +1,17 @@
 # Sole Seekers 1.0
 
 ## Overview
-Sole Seekers is a Flutter-based mobile application developed as a final year project. It serves as an e-commerce platform for shoe enthusiasts, providing a seamless and immersive shopping experience.
+Sole Seekers is a Flutter-based mobile application designed to be the ultimate companion for shoe enthusiasts. Leveraging the power of Flutter, this mobile application offers a smooth and engaging shopping experience across iOS and Android.
 
 ## Features
-- User-friendly interface
-- High-resolution product images
-- Advanced search filters
-- Secure payment processing
-- Cross-platform compatibility (iOS, Android, Web)
+- **Intuitive Interface:** Enjoy a clean and user-friendly design that prioritizes ease of navigation and discovery.
+- **High-Resolution Product Images:** Immerse yourself in stunning visuals that showcase the intricate details of every shoe.
+- **Advanced Search Filters:** Refine your search with detailed filtering options by name and price.
+- **Wishlist Feature:** Add your favorite shoes to your wishlist for easy future reference and purchase.
+- **Seamless Shopping Journey:**  Enjoy a streamlined checkout process that gets you to your coveted footwear in no time.
 
+## Target Audience
+Sole Seekers caters to a broad audience of footwear enthusiasts, ranging from casual collectors to hardcore sneakerheads. The intuitive interface and diverse product offerings cater to various preferences, making it a one-stop shop for all your shoe needs.
 ## Getting Started
 
 ### Prerequisites
@@ -33,6 +35,7 @@ Sole Seekers is a Flutter-based mobile application developed as a final year pro
 3. Configure Firebase:
    - Add your `google-services.json` for Android in `android/app/`.
    - Add your `GoogleService-Info.plist` for iOS in `ios/Runner/`.
+   - If any problem arises watch https://youtu.be/G-mbqiE87Lw?si=on3y5UZ2rgtNvgcv
 
 4. Run the application:
    ```bash
@@ -62,9 +65,6 @@ To contribute to the project:
 2. Create a new branch for your feature or bug fix.
 3. Make your changes and commit them.
 4. Push to your branch and create a pull request.
-
-## License
-This project is licensed under the MIT License. See the LICENSE file for details.
 
 ## Acknowledgments
 - Thanks to the Flutter community for their support and resources.
