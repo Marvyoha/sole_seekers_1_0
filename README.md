@@ -10,6 +10,9 @@ Sole Seekers is a Flutter-based mobile application designed to be the ultimate c
 - **Wishlist Feature:** Add your favorite shoes to your wishlist for easy future reference and purchase.
 - **Seamless Shopping Journey:**  Enjoy a streamlined checkout process that gets you to your coveted footwear in no time.
 
+## Application View
+![Refresh the page and try again]([https://path-to-your-image.com/image.png](https://github.com/Marvyoha/sole_seekers_1_0/blob/main/readme_assets/Cart.png))
+
 ## Target Audience
 Sole Seekers caters to a broad audience of footwear enthusiasts, ranging from casual collectors to hardcore sneakerheads. The intuitive interface and diverse product offerings cater to various preferences, making it a one-stop shop for all your shoe needs.
 ## Getting Started
