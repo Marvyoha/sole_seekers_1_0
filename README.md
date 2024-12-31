@@ -11,9 +11,9 @@ Sole Seekers is a Flutter-based mobile application designed to be the ultimate c
 - **Seamless Shopping Journey:**  Enjoy a streamlined checkout process that gets you to your coveted footwear in no time.
 
 ## Application View
-**On Boarding**![On boarding ](https://github.com/user-attachments/assets/484535f8-9e25-4ae3-915c-bdfa23ff2b06
-**Home Screen** ![Home](https://github.com/user-attachments/assets/18fbd978-41f4-40a4-a165-ed4d2c065d4a)
-**Cart Screen** ![Cart](https://github.com/user-attachments/assets/dd2da9c3-9f1a-4028-a025-0baa63bd26b8)
+**On Boarding**<img src="https://github.com/user-attachments/assets/484535f8-9e25-4ae3-915c-bdfa23ff2b06" alt="On boarding" width="300"/>
+**Home Screen**![Home](https://github.com/user-attachments/assets/18fbd978-41f4-40a4-a165-ed4d2c065d4a)
+**Cart Screen**![Cart](https://github.com/user-attachments/assets/dd2da9c3-9f1a-4028-a025-0baa63bd26b8)
 
 
 ## Target Audience
